@@ -3,9 +3,33 @@
 import { Mail, Lock, Eye, EyeOff, X } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+/* ---------------- ZOD SCHEMA ---------------- */
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {
+    console.log("Login Data:", data);
+    // call API here
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -24,54 +48,79 @@ export default function LoginForm() {
         {/* FORM SECTION */}
         <div className="p-8 md:p-12 flex flex-col justify-center">
           <div className="flex justify-end mb-4">
-            <button>
+            <button type="button" className="cursor-pointer">
               <X className="text-black" />
             </button>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Welcome Back!</h1>
           <p className="text-gray-500 mt-2">
-            Hey, welcome back to your special place
+            Get your household tasks done quickly and easily
           </p>
 
-          <form className="mt-8 space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
             {/* EMAIL */}
-            <div className="relative focus-within:text-[#006BAA]">
-              <Mail
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg
-                           text-black placeholder-gray-500
-                           focus:outline-none focus:ring-1 focus:ring-[#006BAA] focus:border-[#006BAA]"
-              />
+            <div className="mb-4">
+              <div className="relative">
+                <Mail
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  {...register("email")}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg
+                  text-black placeholder-gray-500
+                  focus:outline-none focus:ring-1
+                  ${
+                    errors.email
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-[#006BAA]"
+                  }`}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-2">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* PASSWORD */}
-            <div className="relative focus-within:text-[#006BAA]">
-              <Lock
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
+            <div className="mb-4">
+              <div className="relative">
+                <Lock
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  {...register("password")}
+                  className={`w-full pl-10 pr-10 py-3 border rounded-lg
+                  text-black placeholder-gray-500
+                  focus:outline-none focus:ring-1
+                  ${
+                    errors.password
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-[#006BAA]"
+                  }`}
+                />
 
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg
-                           text-black placeholder-gray-500
-                           focus:outline-none focus:ring-1 focus:ring-[#006BAA] focus:border-[#006BAA]"
-              />
-
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-2">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-between text-sm">
@@ -86,9 +135,11 @@ export default function LoginForm() {
 
             <button
               type="submit"
-              className="w-full bg-[#006BAA] text-white py-3 rounded-lg hover:bg-[#01508d] transition"
+              disabled={isSubmitting}
+              className="w-full bg-[#006BAA] text-white py-3 rounded-lg
+                         hover:bg-[#01508d] transition disabled:opacity-60"
             >
-              Sign In
+              {isSubmitting ? "Signing In..." : "Sign In"}
             </button>
           </form>
 
