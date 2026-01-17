@@ -24,3 +24,27 @@ export const handleRegister = async (formData: any) => {
     };
   }
 };
+
+export const handleLogin = async (formData: any) => {
+  try {
+    const result = await loginUser(formData);
+    if (result.success) {
+      await setAuthToken(result.token);
+      await setUserData(result.data);
+      return {
+        success: true,
+        message: "Login successful",
+        data: result.data,
+      };
+    }
+    return {
+      success: false,
+      message: result.message || "Login failed",
+    };
+  } catch (err: Error | any) {
+    return {
+      success: false,
+      message: err.message || "Login failed",
+    };
+  }
+};
