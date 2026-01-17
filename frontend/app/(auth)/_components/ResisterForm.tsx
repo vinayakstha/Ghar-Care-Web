@@ -10,12 +10,13 @@ import {
   Phone,
   BadgeCheck,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { handleRegister } from "@/lib/actions/auth-action";
 
 /* ---------------- ZOD SCHEMA ---------------- */
 const registerSchema = z
@@ -47,9 +48,21 @@ export default function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
+  const [error, setError] = useState("");
+  const [pending, setTransition] = useTransition();
   const onSubmit = async (data: RegisterFormValues) => {
-    console.log("Registration Data:", data);
-    router.push("/login");
+    setError("");
+    try {
+      const res = await handleRegister(data);
+      if (!res.success) {
+        throw new Error(res.message || "Registration failed");
+      }
+      setTransition(() => {
+        router.push("/login");
+      });
+    } catch (err: Error | any) {
+      setError(err.message || "Registration failed");
+    }
   };
 
   return (
