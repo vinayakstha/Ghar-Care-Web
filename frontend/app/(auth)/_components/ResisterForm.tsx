@@ -97,7 +97,7 @@ export default function RegisterForm() {
                 type="text"
                 placeholder="First Name"
                 {...register("firstName")}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 text-black ${
                   errors.firstName
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-[#006BAA]"
@@ -121,7 +121,7 @@ export default function RegisterForm() {
                 type="text"
                 placeholder="Last Name"
                 {...register("lastName")}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 text-black ${
                   errors.lastName
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-[#006BAA]"
@@ -147,7 +147,7 @@ export default function RegisterForm() {
               type="text"
               placeholder="Username"
               {...register("username")}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 ${
+              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 text-black ${
                 errors.username
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-[#006BAA]"
@@ -173,7 +173,7 @@ export default function RegisterForm() {
                 type="email"
                 placeholder="Email"
                 {...register("email")}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 text-black ${
                   errors.email
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-[#006BAA]"
@@ -197,7 +197,7 @@ export default function RegisterForm() {
                 type="text"
                 placeholder="Phone Number"
                 {...register("phoneNumber")}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 text-black ${
                   errors.phoneNumber
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-[#006BAA]"
@@ -220,7 +220,7 @@ export default function RegisterForm() {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               {...register("password")}
-              className={`w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 ${
+              className={`w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 text-black ${
                 errors.password
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-[#006BAA]"
@@ -249,7 +249,7 @@ export default function RegisterForm() {
               type={showPassword ? "text" : "password"}
               placeholder="Confirm Password"
               {...register("confirmPassword")}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 ${
+              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 placeholder-gray-500 text-black ${
                 errors.confirmPassword
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-[#006BAA]"
