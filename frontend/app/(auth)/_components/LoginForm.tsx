@@ -1,11 +1,12 @@
 "use client";
 
 import { Mail, Lock, Eye, EyeOff, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { handleLogin } from "@/lib/actions/auth-action";
 import Link from "next/link";
 
 /* ---------------- ZOD SCHEMA ---------------- */
@@ -18,6 +19,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [pending, setTransition] = useTransition();
   const router = useRouter();
 
   const {
@@ -28,9 +30,20 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
+  const [error, setError] = useState("");
   const onSubmit = async (data: LoginFormValues) => {
-    console.log("Login Data:", data);
-    // call API here
+    setError("");
+    try {
+      const res = await handleLogin(data);
+      if (!res.success) {
+        throw new Error(res.message || "Login failed");
+      }
+      setTransition(() => {
+        router.push("/");
+      });
+    } catch (err: Error | any) {
+      setError(err.message || "Login failed");
+    }
   };
 
   return (
