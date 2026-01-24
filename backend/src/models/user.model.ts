@@ -9,6 +9,7 @@ const UserSchema: Schema = new Schema<UserType>(
     email: { type: String, required: true, unique: true },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    profilePicture: { type: String, required: false },
     role: {
       type: String,
       enum: ["user", "admin"],
@@ -17,7 +18,7 @@ const UserSchema: Schema = new Schema<UserType>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export interface IUser extends UserType, Document {

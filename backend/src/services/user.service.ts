@@ -1,4 +1,4 @@
-import { CreateUserDTO, LoginUserDTO } from "../dtos/user.dto";
+import { CreateUserDTO, LoginUserDTO, UpdateUserDTO } from "../dtos/user.dto";
 import { UserRepository } from "../repositories/user.repository";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../errors/http-error";
@@ -43,5 +43,40 @@ export class UserService {
     };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "30d" });
     return { token, user };
+  }
+
+  async updateUser(userId: string, data: UpdateUserDTO) {
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+
+    if (user.username !== data.username) {
+      const usernameExists = await userRepository.getUserByUsername(
+        data.username!,
+      );
+      if (usernameExists) {
+        throw new HttpError(403, "Username already in use");
+      }
+    }
+
+    if (user.phoneNumber !== data.phoneNumber) {
+      const phoneNumberExists = await userRepository.getUserByPhoneNumber(
+        data.phoneNumber!,
+      );
+      if (phoneNumberExists) {
+        throw new HttpError(402, "Phone number already in use");
+      }
+    }
+
+    const updateData: any = {};
+    if (data.firstName) updateData.firstName = data.firstName;
+    if (data.lastName) updateData.lastName = data.lastName;
+    if (data.username) updateData.username = data.username;
+    if (data.phoneNumber) updateData.phoneNumber = data.phoneNumber;
+    if (data.profilePicture) updateData.profilePicture = data.profilePicture;
+
+    const updatedUser = await userRepository.updateUser(userId, updateData);
+    return updatedUser;
   }
 }

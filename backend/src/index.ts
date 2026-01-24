@@ -4,6 +4,7 @@ import { connectDatabase } from "./database/mongodb";
 import { PORT } from "./config";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route";
+import userRoutes from "./routes/user.route";
 import cors from "cors";
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 app.get("/", (req: Request, res: Response) => {
   return res
     .status(200)
