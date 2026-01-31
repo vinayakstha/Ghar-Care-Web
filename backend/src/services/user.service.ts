@@ -97,14 +97,4 @@ export class UserService {
 
     return user;
   }
-
-  async getAllUsers() {
-    const users = await userRepository.getAllUsers();
-
-    if (!users) {
-      throw new HttpError(404, "Users not found");
-    }
-
-    return users;
-  }
 }
