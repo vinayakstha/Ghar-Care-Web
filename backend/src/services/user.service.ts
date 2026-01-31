@@ -79,4 +79,32 @@ export class UserService {
     const updatedUser = await userRepository.updateUser(userId, updateData);
     return updatedUser;
   }
+
+  async getUserById(userId: string) {
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+    return user;
+  }
+
+  async getCurrentUser(userId: string) {
+    const user = await userRepository.getCurrentUser(userId);
+
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+
+    return user;
+  }
+
+  async getAllUsers() {
+    const users = await userRepository.getAllUsers();
+
+    if (!users) {
+      throw new HttpError(404, "Users not found");
+    }
+
+    return users;
+  }
 }

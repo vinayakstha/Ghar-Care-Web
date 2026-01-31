@@ -13,4 +13,7 @@ router.put(
   userController.updateProfile,
 );
 
+router.get("/me", authorizedMiddleware, userController.getCurrentUser);
+router.get("/:id", authorizedMiddleware, userController.getUserById);
+
 export default router;
