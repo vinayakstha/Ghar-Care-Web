@@ -5,7 +5,7 @@ import { PORT } from "./config";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
-import adminRoutes from "./routes/admin.route";
+import adminUserRoutes from "./routes/admin/user.route";
 import cors from "cors";
 import path from "path";
 
@@ -26,7 +26,7 @@ const uploadsPath = path.resolve(__dirname, "../uploads"); // adjust based on wh
 app.use("/uploads", express.static(uploadsPath));
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/admin/users", adminRoutes);
+app.use("/api/admin/users", adminUserRoutes);
 app.get("/", (req: Request, res: Response) => {
   return res
     .status(200)

@@ -11,6 +11,7 @@ export const CreateUserDTO = UserSchema.pick({
 })
   .extend({
     confirmPassword: z.string().min(6),
+    profilePicture: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "passwords do not match",
