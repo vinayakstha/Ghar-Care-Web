@@ -29,21 +29,45 @@ export default function LoginForm() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
+  const [error, setError] = useState<string | null>(null);
+  // const onSubmit = async (data: LoginFormValues) => {
+  //   setError("");
+  //   try {
+  //     const res = await handleLogin(data);
+  //     if (!res.success) {
+  //       throw new Error(res.message || "Login failed");
+  //     }
+  //     setTransition(() => {
+  //       router.push("/");
+  //     });
+  //   } catch (err: Error | any) {
+  //     setError(err.message || "Login failed");
+  //   }
+  // };
 
-  const [error, setError] = useState("");
-  const onSubmit = async (data: LoginFormValues) => {
-    setError("");
-    try {
-      const res = await handleLogin(data);
-      if (!res.success) {
-        throw new Error(res.message || "Login failed");
+  const onSubmit = async (values: LoginFormValues) => {
+    setError(null);
+    setTransition(async () => {
+      try {
+        const response = await handleLogin(values);
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+        if (response.success) {
+          if (response.data?.role == "admin") {
+            return router.replace("/admin/dashboard");
+          }
+          if (response.data?.role === "user") {
+            return router.replace("/user/services");
+          }
+          return router.replace("/");
+        } else {
+          setError("Login failed");
+        }
+      } catch (err: Error | any) {
+        setError(err.message || "Login failed");
       }
-      setTransition(() => {
-        router.push("/");
-      });
-    } catch (err: Error | any) {
-      setError(err.message || "Login failed");
-    }
+    });
   };
 
   return (

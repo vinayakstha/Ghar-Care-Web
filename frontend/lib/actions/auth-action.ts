@@ -1,6 +1,6 @@
 "use server";
 
-import { registerUser, loginUser } from "../api/auth";
+import { registerUser, loginUser, getCurrentUser } from "../api/auth";
 import { setUserData, setAuthToken } from "../cookie";
 
 export const handleRegister = async (formData: any) => {
@@ -48,3 +48,22 @@ export const handleLogin = async (formData: any) => {
     };
   }
 };
+
+export async function handleGetCurrentUser() {
+  try {
+    const result = await getCurrentUser();
+    if (result.success) {
+      return {
+        success: true,
+        message: "User data fetched successfully",
+        data: result.data,
+      };
+    }
+    return {
+      success: false,
+      message: result.message || "Failed to fetch user data",
+    };
+  } catch (error: Error | any) {
+    return { success: false, message: error.message };
+  }
+}

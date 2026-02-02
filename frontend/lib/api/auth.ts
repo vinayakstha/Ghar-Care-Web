@@ -22,3 +22,16 @@ export const loginUser = async (loginData: any) => {
     );
   }
 };
+
+export const getCurrentUser = async () => {
+  try {
+    const response = await axios.get(API.AUTH.GETCURRENTUSER);
+    return response.data;
+  } catch (error: Error | any) {
+    throw (
+      new Error(error.response?.data?.message) ||
+      error.message ||
+      "getcurrentuser failed"
+    );
+  }
+};
