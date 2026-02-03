@@ -93,7 +93,7 @@ export default function EditProfile() {
                 fill
                 style={{ objectFit: "cover", borderRadius: "50%" }} // make it perfectly round
               />
-              <label className="absolute bottom-1 right-1 bg-purple-600 text-white p-2 rounded-full shadow hover:bg-purple-700 cursor-pointer">
+              <label className="absolute bottom-1 right-1 bg-[#006BAA] text-white p-2 rounded-full shadow hover:bg-purple-700 cursor-pointer">
                 <Pencil size={10} />
                 <input
                   type="file"
@@ -121,7 +121,7 @@ export default function EditProfile() {
                 placeholder="First name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 "
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function EditProfile() {
                 placeholder="Last name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 "
               />
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function EditProfile() {
                 placeholder="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200"
               />
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function EditProfile() {
                 placeholder="+977 98XXXXXXXX"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 "
               />
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function EditProfile() {
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2.5 rounded-md bg-purple-600 text-white hover:bg-purple-700 transition disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md bg-[#006BAA] text-white hover:bg-[#01508d] transition disabled:opacity-50"
             >
               {loading ? "Updating..." : "Save Changes"}
             </button>
