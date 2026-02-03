@@ -2,21 +2,40 @@
 
 import { useEffect, useState } from "react";
 import { MapPin, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { getCurrentUser } from "@/lib/api/auth"; // your API function
 import Image from "next/image";
 
-export default function ProfilePage() {
+export default function Profile() {
   const { user, setUser, loading, checkAuth } = useAuth();
   const [profileLoading, setProfileLoading] = useState(true);
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       setProfileLoading(true);
+  //       // Try getting the current user from API
+  //       const data = await getCurrentUser();
+  //       setUser(data); // update context
+  //     } catch (err) {
+  //       console.error("Failed to fetch user:", err);
+  //     } finally {
+  //       setProfileLoading(false);
+  //     }
+  //   };
+
+  //   // Only fetch if no user is in context
+  //   if (!user) fetchUser();
+  // }, [user, setUser]);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         setProfileLoading(true);
-        // Try getting the current user from API
         const data = await getCurrentUser();
-        setUser(data); // update context
+        setUser(data.data); // make sure this is the actual user object
       } catch (err) {
         console.error("Failed to fetch user:", err);
       } finally {
@@ -24,11 +43,10 @@ export default function ProfilePage() {
       }
     };
 
-    // Only fetch if no user is in context
-    if (!user) fetchUser();
+    if (!user || !user.firstName) fetchUser(); // fetch if user is missing or incomplete
   }, [user, setUser]);
 
-  if (loading || profileLoading) return <p>Loading profile...</p>;
+  if (loading) return <p>Loading profile...</p>;
   const profilePicUrl = user?.profilePicture
     ? user.profilePicture.startsWith("http")
       ? user.profilePicture
@@ -71,7 +89,10 @@ export default function ProfilePage() {
       <div className="bg-white rounded-xl shadow-sm">
         <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b">
           <h3 className="font-semibold text-gray-700">Personal Information</h3>
-          <button className="flex items-center gap-1 text-sm bg-[#006BAA] text-white px-3 py-1.5 rounded-md hover:bg-[#01508d]">
+          <button
+            className="flex items-center gap-1 text-sm bg-[#006BAA] text-white px-3 py-1.5 rounded-md hover:bg-[#01508d]"
+            onClick={() => router.push("/user/edit-profile")}
+          >
             <Pencil size={14} />
             Edit
           </button>
