@@ -6,6 +6,7 @@ export interface IUserRepository {
   createUser(userData: Partial<IUser>): Promise<IUser>;
   getUserById(id: string): Promise<IUser | null>;
   getAllUsers(): Promise<IUser[]>;
+  getCurrentUser(id: string): Promise<IUser | null>;
   updateUser(id: string, updateData: Partial<IUser>): Promise<IUser | null>;
   deleteUser(id: string): Promise<boolean>;
 }
@@ -23,13 +24,20 @@ export class UserRepository implements IUserRepository {
     const user = await UserModel.findById(id);
     return user;
   }
+
+  async getUserByPhoneNumber(phoneNumber: string): Promise<IUser | null> {
+    const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+    return user;
+  }
+
   async getAllUsers(): Promise<IUser[]> {
     const users = await UserModel.find();
     return users;
   }
+
   async updateUser(
     id: string,
-    updateData: Partial<IUser>
+    updateData: Partial<IUser>,
   ): Promise<IUser | null> {
     const updateUser = await UserModel.findByIdAndUpdate(id, updateData, {
       new: true,
@@ -43,5 +51,10 @@ export class UserRepository implements IUserRepository {
   async createUser(userData: Partial<IUser>): Promise<IUser> {
     const user = new UserModel(userData);
     return await user.save();
+  }
+
+  async getCurrentUser(id: string): Promise<IUser | null> {
+    const user = await UserModel.findById(id).select("-password");
+    return user;
   }
 }
