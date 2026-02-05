@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { handleLogin } from "@/lib/actions/auth-action";
 import Link from "next/link";
 
@@ -30,20 +31,6 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
   const [error, setError] = useState<string | null>(null);
-  // const onSubmit = async (data: LoginFormValues) => {
-  //   setError("");
-  //   try {
-  //     const res = await handleLogin(data);
-  //     if (!res.success) {
-  //       throw new Error(res.message || "Login failed");
-  //     }
-  //     setTransition(() => {
-  //       router.push("/");
-  //     });
-  //   } catch (err: Error | any) {
-  //     setError(err.message || "Login failed");
-  //   }
-  // };
 
   const onSubmit = async (values: LoginFormValues) => {
     setError(null);
@@ -55,16 +42,20 @@ export default function LoginForm() {
         }
         if (response.success) {
           if (response.data?.role == "admin") {
+            toast.success("Login successful");
             return router.replace("/admin/dashboard");
           }
           if (response.data?.role === "user") {
+            toast.success("Login successful");
             return router.replace("/user/services");
           }
           return router.replace("/");
         } else {
+          toast.error("Login failed");
           setError("Login failed");
         }
       } catch (err: Error | any) {
+        toast.error("Login failed");
         setError(err.message || "Login failed");
       }
     });

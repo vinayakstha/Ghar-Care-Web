@@ -5,6 +5,7 @@ import { User, AtSign, Phone, Pencil, ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { handleUpdateProfile } from "@/lib/actions/auth-action";
 
 export default function EditProfile() {
@@ -56,11 +57,11 @@ export default function EditProfile() {
     const result = await handleUpdateProfile(formData);
 
     if (result.success) {
-      alert("Profile updated successfully!");
+      toast.success("Profile updated");
       setUser(result.data); // update context
       router.push("/user/profile"); // go back to profile page
     } else {
-      alert(result.message || "Failed to update profile");
+      toast.error("Failed to updated profile");
     }
 
     setLoading(false);
