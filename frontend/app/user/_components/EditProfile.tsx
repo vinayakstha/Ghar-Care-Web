@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { User, AtSign, Phone, Pencil, ArrowLeft } from "lucide-react";
+import { User, AtSign, Phone, Pencil, ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
@@ -67,7 +67,7 @@ export default function EditProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="w-full p-4 md:p-6 space-y-6  min-h-screen">
       {/* HEADER */}
       <div className="flex items-center gap-3 mb-6">
         <button
@@ -83,7 +83,7 @@ export default function EditProfile() {
       <div className="max-w-2xl bg-white rounded-xl shadow-sm p-6 md:p-8 mx-auto">
         <form className="space-y-5" onSubmit={handleSubmit}>
           {/* PROFILE IMAGE */}
-          <div className="flex justify-center mb-8">
+          <div className="flex flex-col items-center mb-8">
             <div className="relative w-24 h-24">
               {" "}
               {/* set fixed width & height */}
@@ -93,7 +93,7 @@ export default function EditProfile() {
                 fill
                 style={{ objectFit: "cover", borderRadius: "50%" }} // make it perfectly round
               />
-              <label className="absolute bottom-1 right-1 bg-[#006BAA] text-white p-2 rounded-full shadow hover:bg-purple-700 cursor-pointer">
+              <label className="absolute bottom-1 right-1 bg-[#006BAA] text-white p-2 rounded-full shadow hover:bg-[#01508d] cursor-pointer">
                 <Pencil size={10} />
                 <input
                   type="file"
@@ -103,6 +103,7 @@ export default function EditProfile() {
                 />
               </label>
             </div>
+            <p className="mt-2 text-sm text-gray-600">Select Image</p>
           </div>
 
           {/* FORM */}
@@ -189,8 +190,9 @@ export default function EditProfile() {
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2.5 rounded-md bg-[#006BAA] text-white hover:bg-[#01508d] transition disabled:opacity-50"
+              className="flex items-center gap-1 text-sm bg-[#006BAA] text-white px-3 py-1.5 rounded-md hover:bg-[#01508d]"
             >
+              <Save size={14} />
               {loading ? "Updating..." : "Save Changes"}
             </button>
           </div>
