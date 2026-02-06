@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
 import adminUserRoutes from "./routes/admin/user.route";
+import adminCategoryRoutes from "./routes/admin/category.route";
+import categoryRoutes from "./routes/category.route";
 import cors from "cors";
 import path from "path";
 
@@ -27,6 +29,8 @@ app.use("/uploads", express.static(uploadsPath));
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin/category", adminCategoryRoutes);
+app.use("/api/user/category", categoryRoutes);
 app.get("/", (req: Request, res: Response) => {
   return res
     .status(200)
