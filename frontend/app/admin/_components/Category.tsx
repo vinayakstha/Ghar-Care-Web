@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Pencil } from "lucide-react";
-import { useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Pencil, Plus } from "lucide-react";
+import Image from "next/image";
+import { toast } from "react-toastify";
+import {
+  handleCreateCategory,
+  handleGetCategories,
+  handleUpdateCategory,
+  handleDeleteCategory,
+} from "@/lib/actions/admin/category-action";
 
 interface Category {
   _id: string;
@@ -10,142 +17,132 @@ interface Category {
   categoryImage: string;
 }
 
-export default function CategoryAdmin() {
-  const [categories, setCategories] = useState<Category[]>([]);
+export default function Category() {
   const [categoryName, setCategoryName] = useState("");
   const [categoryImage, setCategoryImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
+    null,
+  );
 
-  // ----------------------------
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const IMAGE_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050";
+
+  // IMAGE PREVIEW
+  const handleImageChange = (file: File | null) => {
+    setCategoryImage(file);
+    if (file) setImagePreview(URL.createObjectURL(file));
+    else setImagePreview(null);
+  };
+
+  // CLEAR FORM
+  const clearForm = () => {
+    setCategoryName("");
+    setCategoryImage(null);
+    setImagePreview(null);
+    setEditingCategoryId(null);
+  };
+
   // FETCH CATEGORIES
-  // ----------------------------
   const fetchCategories = async () => {
-    const res = await fetch("/api/admin/category");
-    const data = await res.json();
-    setCategories(data);
+    const res = await handleGetCategories();
+    if (res.success) setCategories(res.data);
+    else alert(res.message);
   };
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // ----------------------------
-  // IMAGE PREVIEW
-  // ----------------------------
-  const handleImageChange = (file: File | null) => {
-    setCategoryImage(file);
-
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImagePreview(null);
-    }
-  };
-
-  // ----------------------------
-  // CLEAR FORM
-  // ----------------------------
-  const clearForm = () => {
-    setCategoryName("");
-    setCategoryImage(null);
-    setImagePreview(null);
-    setSelectedId(null);
-  };
-
-  // ----------------------------
   // CREATE / UPDATE
-  // ----------------------------
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("categoryName", categoryName);
-    if (categoryImage) {
-      formData.append("categoryImage", categoryImage);
+    if (categoryImage) formData.append("categoryImage", categoryImage);
+
+    try {
+      const res = editingCategoryId
+        ? await handleUpdateCategory(editingCategoryId, formData)
+        : await handleCreateCategory(formData);
+
+      if (res.success) {
+        toast.success(res.message);
+        clearForm();
+        fetchCategories();
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed");
     }
-
-    const url = selectedId
-      ? `/api/admin/category/${selectedId}`
-      : "/api/admin/category";
-
-    const method = selectedId ? "PUT" : "POST";
-
-    await fetch(url, {
-      method,
-      body: formData,
-    });
-
-    fetchCategories();
-    clearForm();
   };
 
-  // ----------------------------
-  // DELETE
-  // ----------------------------
-  const handleDelete = async (id: string) => {
-    await fetch(`/api/admin/category/${id}`, {
-      method: "DELETE",
-    });
-    fetchCategories();
-  };
-
-  // ----------------------------
   // EDIT
-  // ----------------------------
-  const handleEdit = (category: Category) => {
-    setSelectedId(category._id);
-    setCategoryName(category.categoryName);
-    setImagePreview(category.categoryImage); // show existing image
-    setCategoryImage(null); // only update if new file is chosen
+  const handleEdit = (cat: Category) => {
+    setEditingCategoryId(cat._id);
+    setCategoryName(cat.categoryName);
+    // setImagePreview(cat.categoryImage);
+    setImagePreview(`${IMAGE_BASE_URL}${cat.categoryImage}`);
+    setCategoryImage(null);
   };
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // DELETE
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this category?")) return;
+
+    try {
+      const res = await handleDeleteCategory(id);
+      if (res.success) {
+        toast.success(res.message);
+        if (editingCategoryId === id) clearForm();
+        fetchCategories();
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error: any) {
+      toast.success(error.message || "Failed to delete category");
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow space-y-6">
       {/* FORM */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* IMAGE UPLOAD + PREVIEW */}
         <div>
           <label className="block text-sm font-medium mb-2">
             Category Image
           </label>
-
-          <div className="flex items-center gap-4">
-            <div className="relative w-28 h-28">
-              {/* IMAGE PREVIEW */}
-              <img
-                src={imagePreview || "/placeholder.png"}
-                alt="Category"
-                className="w-full h-full object-cover rounded-md border"
-              />
-
-              {/* PENCIL OVERLAY */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-1 right-1 bg-gray-800 text-white p-1.5 rounded-full shadow hover:bg-gray-700"
-              >
-                <Pencil size={14} />
-              </button>
-
-              {/* HIDDEN FILE INPUT */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleImageChange(e.target.files?.[0] || null)}
-              />
-            </div>
+          <div className="relative w-28 h-28">
+            <Image
+              src={imagePreview || "/images/category-placeholder.png"}
+              alt="Category"
+              fill
+              className="object-cover rounded-md border"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-1 right-1 bg-[#006BAA] text-white p-1.5 rounded-full"
+            >
+              <Pencil size={14} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleImageChange(e.target.files?.[0] || null)}
+            />
           </div>
         </div>
 
-        {/* NAME */}
         <div>
           <label className="block text-sm font-medium mb-2">
             Category Name
           </label>
           <input
-            type="text"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
             className="w-full border rounded p-2"
@@ -158,59 +155,71 @@ export default function CategoryAdmin() {
       <div className="flex gap-3">
         <button
           onClick={handleSubmit}
-          className="px-5 py-2 bg-blue-600 text-white rounded"
+          className="px-4 py-1.5 bg-[#07ac1d] hover:bg-[#06c720] text-white rounded transition flex items-center gap-1"
         >
-          {selectedId ? "Update" : "Create"}
+          {editingCategoryId ? <Pencil size={15} /> : <Plus size={15} />}
+          <span>{editingCategoryId ? "Update" : "Create"}</span>
         </button>
-
         <button
           onClick={clearForm}
-          className="px-5 py-2 bg-gray-400 text-white rounded"
+          className="px-4 py-1.5 bg-[#323131] hover:bg-[#4b4a4a] text-white rounded transition"
         >
           Clear
         </button>
       </div>
 
       {/* TABLE */}
-      <div className="overflow-x-auto">
-        <table className="w-full border border-gray-200">
-          <thead className="bg-gray-100">
+      <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
             <tr>
-              <th className="p-2 border">Image</th>
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Actions</th>
+              <th className="px-6 py-4 text-left">Category</th>
+              <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {categories.map((cat) => (
-              <tr key={cat._id} className="text-center">
-                <td className="p-2 border">
-                  <img
-                    src={cat.categoryImage}
-                    alt={cat.categoryName}
-                    className="h-12 w-12 object-cover mx-auto rounded"
-                  />
-                </td>
-                <td className="p-2 border">{cat.categoryName}</td>
-                <td className="p-2 border space-x-2">
-                  <button
-                    onClick={() => handleEdit(cat)}
-                    className="px-3 py-1 bg-yellow-500 text-white rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(cat._id)}
-                    className="px-3 py-1 bg-red-600 text-white rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {categories.length === 0 && (
+
+          <tbody className="divide-y divide-gray-100">
+            {categories.length > 0 ? (
+              categories.map((cat) => (
+                <tr
+                  key={cat._id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  {/* NAME */}
+                  <td className="px-6 py-4 text-gray-600">
+                    {cat.categoryName}
+                  </td>
+
+                  {/* ACTIONS */}
+                  <td className="px-6 py-4 text-right">
+                    <div className="inline-flex items-center gap-2">
+                      <button
+                        onClick={() => handleEdit(cat)}
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg
+                             bg-yellow-50 text-yellow-600 hover:bg-yellow-100
+                             transition"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(cat._id)}
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg
+                             bg-red-50 text-red-600 hover:bg-red-100
+                             transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
-                <td colSpan={3} className="p-4 text-gray-500">
+                <td
+                  colSpan={3}
+                  className="px-6 py-10 text-center text-gray-400"
+                >
                   No categories found
                 </td>
               </tr>
