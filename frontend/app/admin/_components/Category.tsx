@@ -107,125 +107,126 @@ export default function Category() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow space-y-6">
-      {/* FORM */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Category Image
-          </label>
-          <div className="relative w-28 h-28">
-            <Image
-              src={imagePreview || "/images/category-placeholder.png"}
-              alt="Category"
-              fill
-              className="object-cover rounded-md border"
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-1 right-1 bg-[#006BAA] text-white p-1.5 rounded-full"
-            >
-              <Pencil size={14} />
-            </button>
+    <div className=" p-4 md:p-6 space-y-6  min-h-screen">
+      {/* PAGE TITLE */}
+      <h1 className="text-lg font-semibold text-gray-700">Category</h1>
+
+      <div className="bg-white p-6 rounded-xl shadow space-y-6">
+        {/* FORM */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Image</label>
+            <div className="relative w-28 h-28">
+              <Image
+                src={imagePreview || "/images/category-placeholder.png"}
+                alt="Category"
+                fill
+                className="object-cover rounded-md border"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-1 right-1 bg-[#006BAA] text-white p-1.5 rounded-full"
+              >
+                <Pencil size={14} />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleImageChange(e.target.files?.[0] || null)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Name</label>
             <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => handleImageChange(e.target.files?.[0] || null)}
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+              className="w-full border rounded p-2"
+              placeholder="Enter category name"
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Category Name
-          </label>
-          <input
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-            className="w-full border rounded p-2"
-            placeholder="Enter category name"
-          />
+        {/* BUTTONS */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-1.5 bg-[#07ac1d] hover:bg-[#06c720] text-white rounded transition flex items-center gap-1"
+          >
+            {editingCategoryId ? <Pencil size={15} /> : <Plus size={15} />}
+            <span>{editingCategoryId ? "Update" : "Create"}</span>
+          </button>
+          <button
+            onClick={clearForm}
+            className="px-4 py-1.5 bg-[#323131] hover:bg-[#4b4a4a] text-white rounded transition"
+          >
+            Clear
+          </button>
         </div>
-      </div>
 
-      {/* BUTTONS */}
-      <div className="flex gap-3">
-        <button
-          onClick={handleSubmit}
-          className="px-4 py-1.5 bg-[#07ac1d] hover:bg-[#06c720] text-white rounded transition flex items-center gap-1"
-        >
-          {editingCategoryId ? <Pencil size={15} /> : <Plus size={15} />}
-          <span>{editingCategoryId ? "Update" : "Create"}</span>
-        </button>
-        <button
-          onClick={clearForm}
-          className="px-4 py-1.5 bg-[#323131] hover:bg-[#4b4a4a] text-white rounded transition"
-        >
-          Clear
-        </button>
-      </div>
+        {/* TABLE */}
+        <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+              <tr>
+                <th className="px-6 py-4 text-left">Category</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
 
-      {/* TABLE */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-            <tr>
-              <th className="px-6 py-4 text-left">Category</th>
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
+            <tbody className="divide-y divide-gray-100">
+              {categories.length > 0 ? (
+                categories.map((cat) => (
+                  <tr
+                    key={cat._id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    {/* NAME */}
+                    <td className="px-6 py-4 text-gray-600">
+                      {cat.categoryName}
+                    </td>
 
-          <tbody className="divide-y divide-gray-100">
-            {categories.length > 0 ? (
-              categories.map((cat) => (
-                <tr
-                  key={cat._id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  {/* NAME */}
-                  <td className="px-6 py-4 text-gray-600">
-                    {cat.categoryName}
-                  </td>
-
-                  {/* ACTIONS */}
-                  <td className="px-6 py-4 text-right">
-                    <div className="inline-flex items-center gap-2">
-                      <button
-                        onClick={() => handleEdit(cat)}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg
+                    {/* ACTIONS */}
+                    <td className="px-6 py-4 text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(cat)}
+                          className="px-3 py-1.5 text-xs font-medium rounded-lg
                              bg-yellow-50 text-yellow-600 hover:bg-yellow-100
                              transition"
-                      >
-                        Edit
-                      </button>
+                        >
+                          Edit
+                        </button>
 
-                      <button
-                        onClick={() => handleDelete(cat._id)}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg
+                        <button
+                          onClick={() => handleDelete(cat._id)}
+                          className="px-3 py-1.5 text-xs font-medium rounded-lg
                              bg-red-50 text-red-600 hover:bg-red-100
                              transition"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="px-6 py-10 text-center text-gray-400"
+                  >
+                    No categories found
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={3}
-                  className="px-6 py-10 text-center text-gray-400"
-                >
-                  No categories found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

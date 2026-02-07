@@ -1,11 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, House, Users, Grid, Briefcase, User } from "lucide-react";
+import {
+  Menu,
+  House,
+  Users,
+  Grid,
+  Briefcase,
+  User,
+  LayoutDashboard,
+} from "lucide-react";
 import Link from "next/link";
 
 const sidebarItems = [
-  { name: "Dashboard", icon: House, path: "/admin/dashboard" },
+  { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { name: "Users", icon: Users, path: "/admin/users" },
   { name: "Categories", icon: Grid, path: "/admin/categories" },
   { name: "Services", icon: Briefcase, path: "/admin/services" },
