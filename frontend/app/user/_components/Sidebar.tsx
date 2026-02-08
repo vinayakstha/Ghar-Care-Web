@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`h-screen bg-white text-gray-800 border-r border-gray-200 transition-all duration-300 ${
+      className={`h-screen bg-[#006BAA] text-white border-r border-gray-200 transition-all duration-300 ${
         isOpen ? "w-64" : "w-16"
       }`}
     >
@@ -24,7 +24,7 @@ export default function Sidebar() {
       <div
         className={`flex items-center ${
           isOpen ? "justify-start px-4" : "justify-center"
-        } h-16 cursor-pointer hover:bg-gray-100`}
+        } h-16 cursor-pointer hover:bg-[#01508d]`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <Menu size={24} />
@@ -38,7 +38,7 @@ export default function Sidebar() {
             <Link
               key={item.name}
               href={item.path}
-              className={`flex items-center gap-4 px-4 py-3 rounded hover:bg-gray-100 transition-colors ${
+              className={`flex items-center gap-4 px-4 py-3 rounded hover:bg-[#01508d] transition-colors ${
                 !isOpen && "justify-center"
               }`}
             >
