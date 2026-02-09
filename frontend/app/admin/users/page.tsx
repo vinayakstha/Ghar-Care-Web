@@ -20,7 +20,7 @@ export default async function Page({
   }
 
   return (
-    <div>
+    <div className="bg-white">
       <div className="flex justify-end">
         <Link
           href="/admin/users/create"
