@@ -4,6 +4,8 @@ export const API = {
     LOGIN: "/api/auth/login",
     GETCURRENTUSER: "api/user/me",
     UPDATEPROFILE: "/api/user/update-profile",
+    REQUEST_PASSWORD_RESET: "/api/auth/request-password-reset",
+    RESET_PASSWORD: (token: string) => `/api/auth/reset-password/${token}`,
   },
   ADMIN: {
     CATEGORY: {

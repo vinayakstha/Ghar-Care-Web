@@ -68,7 +68,7 @@ export default function LoginForm() {
         <button
           type="button"
           className="cursor-pointer"
-          onClick={() => router.back()}
+          onClick={() => router.replace("/")}
         >
           <X className="text-black" />
         </button>
@@ -147,9 +147,12 @@ export default function LoginForm() {
             <input type="checkbox" className="accent-[#006BAA]" />
             Remember me
           </label>
-          <a href="#" className="text-[#006BAA] hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-[#006BAA] hover:underline"
+          >
             Forgot Password?
-          </a>
+          </Link>
         </div>
 
         <button

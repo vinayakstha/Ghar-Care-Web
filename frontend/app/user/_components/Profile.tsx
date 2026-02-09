@@ -33,7 +33,7 @@ export default function Profile() {
     ? user.profilePicture.startsWith("http")
       ? user.profilePicture
       : `http://localhost:5050${user.profilePicture}`
-    : "/default-profile.png";
+    : "/images/avatar.png";
 
   return (
     <div className="w-full p-4 md:p-6 space-y-6  min-h-screen">

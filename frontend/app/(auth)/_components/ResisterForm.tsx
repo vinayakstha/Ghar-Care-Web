@@ -60,11 +60,11 @@ export default function RegisterForm() {
         throw new Error(res.message || "Registration failed");
       }
       setTransition(() => {
-        toast.success("Login successful");
+        toast.success("registration successful");
         router.push("/login");
       });
     } catch (err: Error | any) {
-      toast.error("Registration failed");
+      toast.error(err.message || "Registration failed");
       setError(err.message || "Registration failed");
     }
   };

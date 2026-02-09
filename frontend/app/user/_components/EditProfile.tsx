@@ -28,7 +28,18 @@ export default function EditProfile() {
       setLastName(user.lastName || "");
       setUsername(user.username || "");
       setPhone(user.phoneNumber || "");
-      setPreview(`http://localhost:5050${user.profilePicture}` || "");
+      // setPreview(`http://localhost:5050${user.profilePicture}` || "");
+
+      if (user.profilePicture) {
+        // if already absolute URL
+        if (user.profilePicture.startsWith("http")) {
+          setPreview(user.profilePicture);
+        } else {
+          setPreview(`http://localhost:5050${user.profilePicture}`);
+        }
+      } else {
+        setPreview("/images/avatar.png"); // fallback
+      }
     }
   }, [user]);
 
