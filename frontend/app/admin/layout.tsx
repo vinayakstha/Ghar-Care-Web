@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Sidebar />
 
         {/* Main content: scrollable */}
-        <main className="flex-1 p-4 bg-white overflow-y-auto mt-2">
+        <main className="flex-1 p-2 bg-white overflow-y-auto mt-2">
           {children}
         </main>
       </div>

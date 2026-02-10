@@ -375,7 +375,7 @@ export default function UpdateUserForm({ user }: { user: any }) {
             id="firstName"
             type="text"
             autoComplete="given-name"
-            className="h-10 w-full rounded-md border border-black/10 dark:border-white/15 bg-background px-3 text-sm outline-none focus:border-foreground/40"
+            className="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-background px-3 text-sm outline-none focus:border-foreground/40"
             {...register("firstName")}
             placeholder="Enter your First Name"
           />
@@ -392,7 +392,7 @@ export default function UpdateUserForm({ user }: { user: any }) {
             id="lastName"
             type="text"
             autoComplete="family-name"
-            className="h-10 w-full rounded-md border border-black/10 dark:border-white/15 bg-background px-3 text-sm outline-none focus:border-foreground/40"
+            className="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-background px-3 text-sm outline-none focus:border-foreground/40"
             {...register("lastName")}
             placeholder="Enter your Last Name"
           />
@@ -411,7 +411,7 @@ export default function UpdateUserForm({ user }: { user: any }) {
           id="email"
           type="email"
           autoComplete="email"
-          className="h-10 w-full rounded-md border border-black/10 dark:border-white/15 bg-background px-3 text-sm outline-none focus:border-foreground/40"
+          className="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-background px-3 text-sm outline-none focus:border-foreground/40"
           {...register("email")}
           placeholder="Enter your Email"
         />
@@ -428,7 +428,7 @@ export default function UpdateUserForm({ user }: { user: any }) {
           id="username"
           type="text"
           autoComplete="username"
-          className="h-10 w-full rounded-md border border-black/10 dark:border-white/15 bg-background px-3 text-sm outline-none focus:border-foreground/40"
+          className="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-background px-3 text-sm outline-none focus:border-foreground/40"
           {...register("username")}
           placeholder="Enter your Username"
         />
@@ -446,7 +446,7 @@ export default function UpdateUserForm({ user }: { user: any }) {
           id="phoneNumber"
           type="tel"
           autoComplete="tel"
-          className="h-10 w-full rounded-md border border-black/10 dark:border-white/15 bg-background px-3 text-sm outline-none focus:border-foreground/40"
+          className="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-background px-3 text-sm outline-none focus:border-foreground/40"
           {...register("phoneNumber")}
           placeholder="Enter your Phone Number"
         />

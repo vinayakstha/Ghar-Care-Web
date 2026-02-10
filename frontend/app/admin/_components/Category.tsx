@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Pencil, Plus } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import DeleteModal from "@/app/_components/DeleteModal";
 import {
   handleCreateCategory,
   handleGetCategories,
@@ -25,6 +26,10 @@ export default function Category() {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
     null,
   );
+
+  // DELETE MODAL STATE
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const IMAGE_BASE_URL =
@@ -49,7 +54,7 @@ export default function Category() {
   const fetchCategories = async () => {
     const res = await handleGetCategories();
     if (res.success) setCategories(res.data);
-    else alert(res.message);
+    else toast.error(res.message);
   };
 
   useEffect(() => {
@@ -58,6 +63,11 @@ export default function Category() {
 
   // CREATE / UPDATE
   const handleSubmit = async () => {
+    if (!categoryName.trim()) {
+      toast.error("Category name is required");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("categoryName", categoryName);
     if (categoryImage) formData.append("categoryImage", categoryImage);
@@ -83,31 +93,39 @@ export default function Category() {
   const handleEdit = (cat: Category) => {
     setEditingCategoryId(cat._id);
     setCategoryName(cat.categoryName);
-    // setImagePreview(cat.categoryImage);
     setImagePreview(`${IMAGE_BASE_URL}${cat.categoryImage}`);
     setCategoryImage(null);
   };
 
-  // DELETE
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this category?")) return;
+  // OPEN DELETE MODAL
+  const openDeleteModal = (id: string) => {
+    setDeleteCategoryId(id);
+    setIsDeleteOpen(true);
+  };
+
+  // CONFIRM DELETE
+  const confirmDelete = async () => {
+    if (!deleteCategoryId) return;
 
     try {
-      const res = await handleDeleteCategory(id);
+      const res = await handleDeleteCategory(deleteCategoryId);
       if (res.success) {
         toast.success(res.message);
-        if (editingCategoryId === id) clearForm();
+        if (editingCategoryId === deleteCategoryId) clearForm();
         fetchCategories();
       } else {
         toast.error(res.message);
       }
     } catch (error: any) {
-      toast.success(error.message || "Failed to delete category");
+      toast.error(error.message || "Failed to delete category");
+    } finally {
+      setIsDeleteOpen(false);
+      setDeleteCategoryId(null);
     }
   };
 
   return (
-    <div className=" p-4 md:p-6 space-y-6  min-h-screen">
+    <div className="p-4 md:p-6 space-y-6 min-h-screen">
       {/* PAGE TITLE */}
       <h1 className="text-lg font-semibold text-gray-700">Category</h1>
 
@@ -185,28 +203,24 @@ export default function Category() {
                     key={cat._id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    {/* NAME */}
                     <td className="px-6 py-4 text-gray-600">
                       {cat.categoryName}
                     </td>
 
-                    {/* ACTIONS */}
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex items-center gap-2">
                         <button
                           onClick={() => handleEdit(cat)}
                           className="px-3 py-1.5 text-xs font-medium rounded-lg
-                             bg-yellow-50 text-yellow-600 hover:bg-yellow-100
-                             transition"
+                          bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
                         >
                           Edit
                         </button>
 
                         <button
-                          onClick={() => handleDelete(cat._id)}
+                          onClick={() => openDeleteModal(cat._id)}
                           className="px-3 py-1.5 text-xs font-medium rounded-lg
-                             bg-red-50 text-red-600 hover:bg-red-100
-                             transition"
+                          bg-red-50 text-red-600 hover:bg-red-100"
                         >
                           Delete
                         </button>
@@ -217,7 +231,7 @@ export default function Category() {
               ) : (
                 <tr>
                   <td
-                    colSpan={3}
+                    colSpan={2}
                     className="px-6 py-10 text-center text-gray-400"
                   >
                     No categories found
@@ -228,6 +242,18 @@ export default function Category() {
           </table>
         </div>
       </div>
+
+      {/* DELETE MODAL */}
+      <DeleteModal
+        isOpen={isDeleteOpen}
+        onClose={() => {
+          setIsDeleteOpen(false);
+          setDeleteCategoryId(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Category"
+        description="Are you sure you want to delete this category? This action cannot be undone."
+      />
     </div>
   );
 }
