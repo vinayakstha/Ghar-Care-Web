@@ -22,7 +22,7 @@ export class ServiceRepository implements IServiceRepository {
     return await ServiceModel.find().populate("categoryId");
   }
 
-  // ✅ Fix: convert string to ObjectId
+  //convert string to ObjectId
   async getServicesByCategory(categoryId: string): Promise<IServiceModel[]> {
     const objectId = new mongoose.Types.ObjectId(categoryId);
     return await ServiceModel.find({ categoryId: objectId }).populate(

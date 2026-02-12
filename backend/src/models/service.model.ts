@@ -20,7 +20,6 @@ const ServiceSchema = new Schema<IServiceModel>(
       required: true,
     },
     price: { type: String, required: true },
-    isAvailable: { type: Boolean, default: true },
   },
   { timestamps: true },
 );

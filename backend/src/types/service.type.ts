@@ -6,7 +6,6 @@ export const ServiceSchema = z.object({
   serviceImage: z.string(),
   categoryId: z.string(),
   price: z.string(),
-  isAvailable: z.boolean(),
 });
 
 export type ServiceType = z.infer<typeof ServiceSchema>;

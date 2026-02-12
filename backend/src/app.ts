@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
 import adminUserRoutes from "./routes/admin/user.route";
 import adminCategoryRoutes from "./routes/admin/category.route";
+import adminServiceRoutes from "./routes/admin/service.route";
 import categoryRoutes from "./routes/category.route";
 import cors from "cors";
 import path from "path";
@@ -24,11 +25,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 const uploadsPath = path.resolve(__dirname, "../uploads"); // adjust based on where uploads is
 app.use("/uploads", express.static(uploadsPath));
+
+//user routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/user/category", categoryRoutes);
+
+//admin routes
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/category", adminCategoryRoutes);
-app.use("/api/user/category", categoryRoutes);
+app.use("/api/admin/service", adminServiceRoutes);
 app.get("/", (req: Request, res: Response) => {
   return res
     .status(200)
