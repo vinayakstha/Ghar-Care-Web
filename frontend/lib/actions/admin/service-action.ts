@@ -26,7 +26,7 @@ export async function handleCreateService(formData: FormData) {
   }
 }
 
-export async function handleGetCategories() {
+export async function handleGetServices() {
   try {
     const result = await getServices();
     if (result.success) {
