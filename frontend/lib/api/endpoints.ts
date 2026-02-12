@@ -15,6 +15,10 @@ export const API = {
       UPDATE: (categoryId: string) => `/api/admin/category/${categoryId}`,
       DELETE: (categoryId: string) => `/api/admin/category/${categoryId}`,
     },
+    SERVICE: {
+      CREATE: "/api/admin/service",
+      GETALL: "/api/admin/service",
+    },
     USER: {
       CREATE: "/api/admin/users/",
       GET_ALL: "/api/admin/users/",
