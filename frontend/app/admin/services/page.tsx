@@ -1,10 +1,41 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import ServiceCard from "./_components/ServiceCard";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import { handleGetServices } from "@/lib/actions/admin/service-action";
+
+interface Service {
+  _id: string;
+  serviceName: string;
+  serviceImage: string;
+}
 
 export default function Page() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchServices = async () => {
+    try {
+      const result = await handleGetServices();
+      if (result.success && result.data) {
+        setServices(result.data);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("Failed to fetch services");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
   return (
     <div className="p-6">
       {/* Create Service Link */}
@@ -18,14 +49,28 @@ export default function Page() {
         </Link>
       </div>
 
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        <ServiceCard title="AC Repair" image="/images/loginImage.jpg" />
-        <ServiceCard title="Pipe installation" image="/images/loginImage.jpg" />
-        <ServiceCard title="hello" image="/images/loginImage.jpg" />
-        <ServiceCard title="hello" image="/images/loginImage.jpg" />
-        <ServiceCard title="hello" image="/images/loginImage.jpg" />
-      </div>
+      {/* Loading */}
+      {loading ? (
+        <p>Loading services...</p>
+      ) : services.length === 0 ? (
+        <p>No services found.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {services.map((service) => {
+            console.log("SERVICE IMAGE:", service.serviceImage);
+
+            return (
+              <ServiceCard
+                key={service._id}
+                title={service.serviceName}
+                image={`http://localhost:5050${service.serviceImage}`}
+                onEdit={() => console.log("Edit", service._id)}
+                onDelete={() => console.log("Delete", service._id)}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
