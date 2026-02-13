@@ -5,7 +5,11 @@ import ServiceCard from "./_components/ServiceCard";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { handleGetServices } from "@/lib/actions/admin/service-action";
+import {
+  handleGetServices,
+  handleDeleteService,
+} from "@/lib/actions/admin/service-action";
+import DeleteModal from "../../_components/DeleteModal";
 
 interface Service {
   _id: string;
@@ -16,8 +20,13 @@ interface Service {
 export default function Page() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
+    null,
+  );
 
   const fetchServices = async () => {
+    setLoading(true);
     try {
       const result = await handleGetServices();
       if (result.success && result.data) {
@@ -29,6 +38,30 @@ export default function Page() {
       toast.error("Failed to fetch services");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedServiceId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedServiceId) return;
+    try {
+      const result = await handleDeleteService(selectedServiceId);
+      if (result.success) {
+        toast.success(result.message);
+        // Refresh services after deletion
+        fetchServices();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("Failed to delete service");
+    } finally {
+      setDeleteModalOpen(false);
+      setSelectedServiceId(null);
     }
   };
 
@@ -56,21 +89,26 @@ export default function Page() {
         <p>No services found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {services.map((service) => {
-            console.log("SERVICE IMAGE:", service.serviceImage);
-
-            return (
-              <ServiceCard
-                key={service._id}
-                title={service.serviceName}
-                image={`http://localhost:5050${service.serviceImage}`}
-                onEdit={() => console.log("Edit", service._id)}
-                onDelete={() => console.log("Delete", service._id)}
-              />
-            );
-          })}
+          {services.map((service) => (
+            <ServiceCard
+              key={service._id}
+              title={service.serviceName}
+              image={`http://localhost:5050${service.serviceImage}`}
+              onEdit={() => console.log("Edit", service._id)}
+              onDelete={() => handleDeleteClick(service._id)}
+            />
+          ))}
         </div>
       )}
+
+      {/* Delete Modal */}
+      <DeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Service"
+        description="Are you sure you want to delete this service? This action cannot be undone."
+      />
     </div>
   );
 }
