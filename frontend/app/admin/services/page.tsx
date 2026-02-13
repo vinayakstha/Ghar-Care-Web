@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ServiceCard from "./_components/ServiceCard";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import {
   handleGetServices,
@@ -24,6 +25,7 @@ export default function Page() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     null,
   );
+  const router = useRouter();
 
   const fetchServices = async () => {
     setLoading(true);
@@ -94,7 +96,9 @@ export default function Page() {
               key={service._id}
               title={service.serviceName}
               image={`http://localhost:5050${service.serviceImage}`}
-              onEdit={() => console.log("Edit", service._id)}
+              onEdit={() =>
+                router.push(`/admin/services/edit-service/${service._id}`)
+              }
               onDelete={() => handleDeleteClick(service._id)}
             />
           ))}

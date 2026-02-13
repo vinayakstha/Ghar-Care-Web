@@ -18,9 +18,9 @@ export const API = {
     SERVICE: {
       CREATE: "/api/admin/service",
       GETALL: "/api/admin/service",
-      GETONE: (serviceId: string) => `api/admin/service/${serviceId}`,
-      UPDATE: (serviceId: string) => `api/admin/service/${serviceId}`,
-      DELETE: (serviceId: string) => `api/admin/service/${serviceId}`,
+      GETONE: (serviceId: string) => `/api/admin/service/${serviceId}`,
+      UPDATE: (serviceId: string) => `/api/admin/service/${serviceId}`,
+      DELETE: (serviceId: string) => `/api/admin/service/${serviceId}`,
       GET_SERVICE_BY_CATEGORY: (categoryId: string) =>
         `api/admin/service/category${categoryId}`,
     },

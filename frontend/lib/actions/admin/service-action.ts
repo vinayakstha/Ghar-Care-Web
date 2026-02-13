@@ -14,7 +14,7 @@ export async function handleCreateService(formData: FormData) {
   try {
     const result = await createService(formData);
     if (result.success) {
-      revalidatePath("/admin/service");
+      revalidatePath("/admin/services");
       return {
         success: true,
         message: "Service created successfully",
@@ -59,7 +59,6 @@ export async function handleGetService(id: string) {
   try {
     const result = await getService(id);
     if (result.success) {
-      revalidatePath("admin/service");
       return {
         success: true,
         message: "service fetched",
@@ -82,9 +81,9 @@ export async function handleUpdateService(id: string, formData: FormData) {
   try {
     const result = await updateService(id, formData);
     if (result.success) {
-      revalidatePath("/admin/service");
+      revalidatePath("/admin/services");
       return {
-        success: false,
+        success: true,
         message: "Service updated successfully",
         data: result.data,
       };
@@ -105,7 +104,7 @@ export async function handleDeleteService(id: string) {
   try {
     const result = await deleteService(id);
     if (result.success) {
-      revalidatePath("/admin/service");
+      revalidatePath("/admin/services");
       return {
         success: true,
         message: "service deleted successfully",
@@ -127,7 +126,7 @@ export async function handleGetServiceByCategory(id: string) {
   try {
     const result = await getServicesByCategory(id);
     if (result.success) {
-      revalidatePath("/admin/service");
+      revalidatePath("/admin/services");
       return {
         success: true,
         message: result.message || "service fetch successfully",

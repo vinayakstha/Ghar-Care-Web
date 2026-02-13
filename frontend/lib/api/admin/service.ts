@@ -29,9 +29,7 @@ export const getServices = async () => {
 
 export const getService = async (serviceId: string) => {
   try {
-    const response = await axios.get(
-      `${API.ADMIN.SERVICE.GETONE}/${serviceId}`,
-    );
+    const response = await axios.get(API.ADMIN.SERVICE.GETONE(serviceId));
     return response.data;
   } catch (error: any) {
     throw new Error(
