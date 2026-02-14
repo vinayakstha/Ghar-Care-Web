@@ -1,42 +1,42 @@
-import {
-  Plug,
-  PanelTop,
-  Lightbulb,
-  Shield,
-  Gauge,
-  SlidersHorizontal,
-} from "lucide-react";
+import { Zap, Sparkles, Wrench, Bug, PaintRoller, Toilet } from "lucide-react";
 
 const services = [
   {
-    title: "Electrical installation",
-    icon: Plug,
+    title: "Electrical",
+    icon: Zap,
+    description: "Safe and reliable solutions for all your electrical needs.",
   },
   {
-    title: "Panel Upgrades",
-    icon: PanelTop,
+    title: "Plumbing",
+    icon: Toilet,
+    description:
+      "Quick fixes and installations for leaks, pipes, and fittings.",
   },
   {
-    title: "Lighting Upgrades",
-    icon: Lightbulb,
+    title: "Cleaning",
+    icon: Sparkles,
+    description: "Professional cleaning to keep your home fresh and spotless.",
   },
   {
-    title: "Surge Protection",
-    icon: Shield,
+    title: "Appliance Repair",
+    icon: Wrench,
+    description: "Expert repair for household appliances of all brands.",
   },
   {
-    title: "Electrical safety assessments",
-    icon: Gauge,
+    title: "Pest Control",
+    icon: Bug,
+    description: "Effective treatments to keep your home pest-free.",
   },
   {
-    title: "Switchboard upgrades",
-    icon: SlidersHorizontal,
+    title: "Painting",
+    icon: PaintRoller,
+    description: "Quality painting services to refresh and protect your space.",
   },
 ];
 
 export default function Services() {
   return (
-    <section className="bg-white py-24">
+    <section className="bg-white py-24" id="services">
       <div className="container mx-auto px-6 max-w-6xl">
         {/* Heading */}
         <div className="text-center mb-16">
@@ -55,6 +55,7 @@ export default function Services() {
               key={index}
               title={service.title}
               Icon={service.icon}
+              description={service.description}
             />
           ))}
         </div>
@@ -64,7 +65,15 @@ export default function Services() {
 }
 
 /* SERVICE CARD */
-function ServiceCard({ title, Icon }: { title: string; Icon: any }) {
+function ServiceCard({
+  title,
+  Icon,
+  description,
+}: {
+  title: string;
+  Icon: any;
+  description: string;
+}) {
   return (
     <div className="group bg-white rounded-lg shadow-md p-8 text-center relative overflow-hidden">
       {/* Icon */}
@@ -76,9 +85,7 @@ function ServiceCard({ title, Icon }: { title: string; Icon: any }) {
       <h3 className="text-lg font-semibold text-[#006BAA] mb-3">{title}</h3>
 
       {/* Description */}
-      <p className="text-sm text-gray-600">
-        Lorem ipsum dolor sit amet consectetur adipiscing elit dolor
-      </p>
+      <p className="text-sm text-gray-600">{description}</p>
 
       {/* Bottom Accent Line */}
       <span className="absolute bottom-0 left-0 h-1 w-full bg-[#006BAA] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />

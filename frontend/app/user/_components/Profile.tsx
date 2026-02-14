@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MapPin, Pencil } from "lucide-react";
+import { Pencil, User, AtSign, Mail, Phone, BadgeCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { getCurrentUser } from "@/lib/api/auth"; // your API function
@@ -11,24 +11,6 @@ export default function Profile() {
   const { user, setUser, loading, checkAuth } = useAuth();
   const [profileLoading, setProfileLoading] = useState(true);
   const router = useRouter();
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       setProfileLoading(true);
-  //       // Try getting the current user from API
-  //       const data = await getCurrentUser();
-  //       setUser(data); // update context
-  //     } catch (err) {
-  //       console.error("Failed to fetch user:", err);
-  //     } finally {
-  //       setProfileLoading(false);
-  //     }
-  //   };
-
-  //   // Only fetch if no user is in context
-  //   if (!user) fetchUser();
-  // }, [user, setUser]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -51,7 +33,7 @@ export default function Profile() {
     ? user.profilePicture.startsWith("http")
       ? user.profilePicture
       : `http://localhost:5050${user.profilePicture}`
-    : "/default-profile.png";
+    : "/images/avatar.png";
 
   return (
     <div className="w-full p-4 md:p-6 space-y-6  min-h-screen">
@@ -70,17 +52,16 @@ export default function Profile() {
           />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-gray-800">
-            {user?.firstName} {user?.lastName}
-          </h2>
-          <p className="text-sm text-gray-500">{user?.role}</p>
-          <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-            {user?.location && (
-              <>
-                <MapPin size={14} />
-                <span>{user.location}</span>
-              </>
-            )}
+          <div className="flex items-center gap-2">
+            <User size={18} className="text-gray-500" />
+            <h2 className="text-lg font-semibold text-gray-800">
+              {user?.firstName} {user?.lastName}
+            </h2>
+          </div>
+          {/* ROLE */}
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <BadgeCheck size={16} />
+            <span>{user?.role}</span>
           </div>
         </div>
       </div>
@@ -94,28 +75,61 @@ export default function Profile() {
             onClick={() => router.push("/user/edit-profile")}
           >
             <Pencil size={14} />
-            Edit
+            Edit Profile
           </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 px-4 md:px-6 py-6">
-          <InfoItem label="First Name" value={user?.firstName || "-"} />
-          <InfoItem label="Last Name" value={user?.lastName || "-"} />
-          <InfoItem label="Username" value={user?.username || "-"} />
-          <InfoItem label="Email Address" value={user?.email || "-"} />
-          <InfoItem label="Phone Number" value={user?.phoneNumber || "-"} />
-          <InfoItem label="User Role" value={user?.role || "-"} />
+          <InfoItem
+            label="First Name"
+            value={user?.firstName || "-"}
+            icon={User}
+          />
+          <InfoItem
+            label="Last Name"
+            value={user?.lastName || "-"}
+            icon={User}
+          />
+          <InfoItem
+            label="Username"
+            value={user?.username || "-"}
+            icon={AtSign}
+          />
+          <InfoItem
+            label="Email Address"
+            value={user?.email || "-"}
+            icon={Mail}
+          />
+          <InfoItem
+            label="Phone Number"
+            value={user?.phoneNumber || "-"}
+            icon={Phone}
+          />
+          <InfoItem label="Role" value={user?.role || "-"} icon={BadgeCheck} />
         </div>
       </div>
     </div>
   );
 }
 
-function InfoItem({ label, value }: { label: string; value: string }) {
+function InfoItem({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: React.ElementType;
+}) {
   return (
-    <div>
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-sm font-medium text-gray-800">{value}</p>
+    <div className="flex items-start gap-3">
+      <div className="mt-1 text-gray-400">
+        <Icon size={16} />
+      </div>
+      <div>
+        <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+        <p className="text-sm font-medium text-gray-800">{value}</p>
+      </div>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Clock, Wallet, ShieldCheck, FileText } from "lucide-react";
+import { Clock, Wallet, ShieldCheck, Award } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="bg-white">
+    <main className="bg-white" id="home">
       {/* HERO SECTION */}
       <section className="relative h-[90vh] w-full">
         {/* Background Image */}
@@ -23,14 +23,8 @@ export default function Home() {
           <div className="container mx-auto px-6 max-w-6xl">
             <div className="max-w-xl text-white">
               <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-                Our expert electricians are trustworthy and reliable
+                Fast, Reliable Home Services at Your Doorstep
               </h1>
-
-              <p className="mt-4 text-gray-200">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
-                tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
-              </p>
-
               <button className="mt-6 bg-[#006BAA] hover:bg-[#01508d] transition text-white px-6 py-3 rounded-md font-medium">
                 Get Started
               </button>
@@ -46,18 +40,22 @@ export default function Home() {
             <FeatureCard
               icon={<Clock className="h-8 w-8 text-[#006BAA]" />}
               title="24/7 Availability"
+              description="We’re always here, whenever you need help."
             />
             <FeatureCard
               icon={<Wallet className="h-8 w-8 text-[#006BAA]" />}
               title="Affordable Price"
+              description="Quality services at prices that fit your budget."
             />
             <FeatureCard
               icon={<ShieldCheck className="h-8 w-8 text-[#006BAA]" />}
-              title="100% Guarantee"
+              title="Trusted Professionals"
+              description="Skilled and verified experts you can rely on."
             />
             <FeatureCard
-              icon={<FileText className="h-8 w-8 text-[#006BAA]" />}
-              title="Free Estimation"
+              icon={<Award className="h-8 w-8 text-[#006BAA]" />}
+              title="Quality Service"
+              description="High-quality work with attention to every detail."
             />
           </div>
         </div>
@@ -70,17 +68,17 @@ export default function Home() {
 function FeatureCard({
   icon,
   title,
+  description,
 }: {
   icon: React.ReactNode;
   title: string;
+  description: string;
 }) {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 text-center">
       <div className="flex justify-center mb-4">{icon}</div>
       <h3 className="font-semibold text-lg mb-2 text-black">{title}</h3>
-      <p className="text-sm text-gray-600">
-        Diam pellentesque class vitae turpis netus aliquet eleifend urna platea.
-      </p>
+      <p className="text-sm text-gray-600">{description}</p>
     </div>
   );
 }

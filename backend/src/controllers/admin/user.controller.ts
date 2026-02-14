@@ -2,6 +2,7 @@ import z from "zod";
 import { CreateUserDTO, UpdateUserDTO } from "../../dtos/user.dto";
 import { AdminUserService } from "../../services/admin/user.service";
 import { Request, Response, NextFunction } from "express";
+import { QueryParams } from "../../types/query.types";
 
 let adminUserService = new AdminUserService();
 
@@ -31,18 +32,24 @@ export class AdminUserController {
     }
   }
 
-  async getAllUsers(req: Request, res: Response) {
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const users = await adminUserService.getAllUsers();
+      const { page, size, search }: QueryParams = req.query;
+      const { users, pagination } = await adminUserService.getAllUsers(
+        page,
+        size,
+        search,
+      );
       return res.status(200).json({
         success: true,
         data: users,
-        message: "all users fetched successfully",
+        pagination: pagination,
+        message: "All Users Retrieved",
       });
     } catch (error: Error | any) {
-      return res.status(error.statusCode || 500).json({
+      return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "internal server error",
+        message: error.message || "Internal Server Error",
       });
     }
   }

@@ -1,3 +1,9 @@
+import Category from "../_components/Category";
+
 export default function Page() {
-  return <div></div>;
+  return (
+    <div>
+      <Category />
+    </div>
+  );
 }

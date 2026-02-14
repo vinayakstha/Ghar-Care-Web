@@ -12,10 +12,18 @@ const adminUserController = new AdminUserController();
 router.use(authorizedMiddleware);
 router.use(adminOnlyMiddleware);
 
-router.post("/", uploads.single("image"), adminUserController.createUser);
+router.post(
+  "/",
+  uploads.single("profilePicture"),
+  adminUserController.createUser,
+);
 router.get("/", adminUserController.getAllUsers);
 router.get("/:id", adminUserController.getUserById);
-router.put("/:id", uploads.single("image"), adminUserController.updateUser);
+router.put(
+  "/:id",
+  uploads.single("profilePicture"),
+  adminUserController.updateUser,
+);
 router.delete("/:id", adminUserController.deleteUser);
 
 export default router;

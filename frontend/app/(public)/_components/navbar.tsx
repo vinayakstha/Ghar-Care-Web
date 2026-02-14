@@ -1,5 +1,6 @@
 "use client";
 
+import { Link as ScrollLink } from "react-scroll";
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -30,15 +31,32 @@ export default function Navbar() {
 
         {/* DESKTOP LINKS */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className="text-gray-700 hover:text-[#006BAA]">
+          <ScrollLink
+            to="home"
+            smooth={true}
+            duration={500}
+            className="cursor-pointer text-gray-700 hover:text-[#006BAA]"
+          >
             Home
-          </Link>
-          <Link href="/services" className="text-gray-700 hover:text-[#006BAA]">
+          </ScrollLink>
+
+          <ScrollLink
+            to="about"
+            smooth={true}
+            duration={500}
+            className="cursor-pointer text-gray-700 hover:text-[#006BAA]"
+          >
+            About
+          </ScrollLink>
+
+          <ScrollLink
+            to="services"
+            smooth={true}
+            duration={500}
+            className="cursor-pointer text-gray-700 hover:text-[#006BAA]"
+          >
             Services
-          </Link>
-          <Link href="/about" className="text-gray-700 hover:text-[#006BAA]">
-            About Us
-          </Link>
+          </ScrollLink>
 
           <Link
             href="/login"
@@ -61,15 +79,35 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden bg-white border-t">
           <div className="flex flex-col px-6 py-4 gap-4">
-            <Link href="/" onClick={() => setOpen(false)}>
+            <ScrollLink
+              to="home"
+              smooth={true}
+              duration={500}
+              onClick={() => setOpen(false)}
+              className="cursor-pointer"
+            >
               Home
-            </Link>
-            <Link href="/services" onClick={() => setOpen(false)}>
-              Services
-            </Link>
-            <Link href="/about" onClick={() => setOpen(false)}>
+            </ScrollLink>
+
+            <ScrollLink
+              to="about"
+              smooth={true}
+              duration={500}
+              onClick={() => setOpen(false)}
+              className="cursor-pointer"
+            >
               About Us
-            </Link>
+            </ScrollLink>
+
+            <ScrollLink
+              to="services"
+              smooth={true}
+              duration={500}
+              onClick={() => setOpen(false)}
+              className="cursor-pointer"
+            >
+              Services
+            </ScrollLink>
 
             <Link
               href="/login"
