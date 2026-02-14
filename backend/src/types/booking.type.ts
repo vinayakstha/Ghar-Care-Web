@@ -1,0 +1,12 @@
+import z from "zod";
+
+export const BookingSchema = z.object({
+  userId: z.string(),
+  serviceId: z.string(),
+  bookingDate: z.string(),
+  bookingTime: z.string(),
+  price: z.string(),
+  status: z.enum(["pending", "completed", "cancelled"]).default("pending"),
+});
+
+export type BookingType = z.infer<typeof BookingSchema>;
