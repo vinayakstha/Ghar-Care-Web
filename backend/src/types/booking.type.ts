@@ -6,6 +6,7 @@ export const BookingSchema = z.object({
   bookingDate: z.string(),
   bookingTime: z.string(),
   price: z.string(),
+  note: z.string(),
   status: z.enum(["pending", "completed", "cancelled"]).default("pending"),
 });
 
