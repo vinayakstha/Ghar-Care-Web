@@ -32,4 +32,10 @@ export const API = {
       DELETE: (userId: string) => `/api/admin/users/${userId}`,
     },
   },
+
+  USER: {
+    CATEGORY: {
+      GETALL: "/api/user/category",
+    },
+  },
 };
