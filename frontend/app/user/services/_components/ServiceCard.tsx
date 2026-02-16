@@ -1,0 +1,48 @@
+"use client";
+
+import React from "react";
+
+interface ServiceCardProps {
+  serviceName: string;
+  servicePrice: string;
+  serviceImage: string;
+  onBookNow?: () => void;
+}
+
+export default function ServiceCard({
+  serviceName,
+  servicePrice,
+  serviceImage,
+  onBookNow,
+}: ServiceCardProps) {
+  return (
+    <div
+      className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+      style={{
+        backgroundImage: `url(${serviceImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Gradient Overlay */}
+      <div
+        className="absolute inset-0 flex flex-col justify-end p-4"
+        style={{
+          background: "linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0))",
+        }}
+      >
+        <div>
+          <h3 className="text-white text-lg font-semibold">{serviceName}</h3>
+          <p className="text-white text-sm mb-3">{servicePrice}</p>
+        </div>
+
+        <button
+          onClick={onBookNow}
+          className="bg-green-500 text-black font-semibold px-4 py-2 rounded hover:bg-yellow-400 transition-colors"
+        >
+          Book Now
+        </button>
+      </div>
+    </div>
+  );
+}

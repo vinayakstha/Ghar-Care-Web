@@ -36,6 +36,10 @@ export const API = {
   USER: {
     CATEGORY: {
       GETALL: "/api/category",
+      GETONE: (categoryId: string) => `/api/category/${categoryId}`,
+    },
+    SERVICE: {
+      GETALL: "/api/service",
     },
   },
 };

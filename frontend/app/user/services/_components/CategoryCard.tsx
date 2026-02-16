@@ -14,12 +14,12 @@ export default function CategoryCard({
   return (
     <div
       onClick={onClick}
-      className="w-48 rounded-2xl shadow-md hover:shadow-lg transition duration-300 cursor-pointer bg-white overflow-hidden"
+      className="w-32 rounded-lg shadow-md hover:shadow-lg transition duration-300 cursor-pointer bg-white overflow-hidden"
     >
-      <img src={image} alt={name} className="w-full h-32 object-contain" />
+      <img src={image} alt={name} className="w-full h-20 object-contain" />
 
-      <div className="p-3 text-center">
-        <h3 className="text-md font-medium text-gray-800">{name}</h3>
+      <div className="p-1.5 text-center">
+        <h3 className="text-xs font-medium text-gray-800">{name}</h3>
       </div>
     </div>
   );
