@@ -35,7 +35,7 @@ export const API = {
 
   USER: {
     CATEGORY: {
-      GETALL: "/api/user/category",
+      GETALL: "/api/category",
     },
   },
 };

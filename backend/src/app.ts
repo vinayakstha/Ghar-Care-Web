@@ -31,7 +31,7 @@ app.use("/uploads", express.static(uploadsPath));
 //user routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/user/category", categoryRoutes);
+app.use("/api/category", categoryRoutes);
 app.use("/api/user/service", serviceRoutes);
 app.use("/api/user/booking", bookingRoutes);
 

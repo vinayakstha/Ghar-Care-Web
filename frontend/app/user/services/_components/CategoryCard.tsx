@@ -16,10 +16,10 @@ export default function CategoryCard({
       onClick={onClick}
       className="w-48 rounded-2xl shadow-md hover:shadow-lg transition duration-300 cursor-pointer bg-white overflow-hidden"
     >
-      <img src={image} alt={name} className="w-full h-32 object-cover" />
+      <img src={image} alt={name} className="w-full h-32 object-contain" />
 
       <div className="p-3 text-center">
-        <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
+        <h3 className="text-md font-medium text-gray-800">{name}</h3>
       </div>
     </div>
   );
