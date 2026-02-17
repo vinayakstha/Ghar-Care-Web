@@ -12,7 +12,7 @@ export class UserBookingService {
     serviceId: string,
     bookingDate: string,
     bookingTime: string,
-    note?: string,
+    location: string,
   ) {
     const service = await serviceRepository.getServiceById(serviceId);
 
@@ -39,7 +39,7 @@ export class UserBookingService {
       bookingDate,
       bookingTime,
       price: service.price,
-      note,
+      location,
       status: "pending",
     });
 

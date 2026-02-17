@@ -17,7 +17,7 @@ export class UserBookingController {
         parsedData.serviceId,
         parsedData.bookingDate,
         parsedData.bookingTime,
-        parsedData.note,
+        parsedData.location,
       );
 
       return res.status(201).json({

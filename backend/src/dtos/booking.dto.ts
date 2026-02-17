@@ -4,7 +4,7 @@ export const CreateBookingDto = z.object({
   serviceId: z.string(),
   bookingDate: z.string(),
   bookingTime: z.string(),
-  note: z.string().optional(),
+  location: z.string(),
 });
 
 export type CreateBookingDtoType = z.infer<typeof CreateBookingDto>;

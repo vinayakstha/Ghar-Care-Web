@@ -40,7 +40,7 @@ export const API = {
     },
     SERVICE: {
       GETALL: "/api/service",
-      GETONE: (serviceId: string) => `/api/category/${serviceId}`,
+      GETONE: (serviceId: string) => `/api/service/${serviceId}`,
     },
   },
 };
