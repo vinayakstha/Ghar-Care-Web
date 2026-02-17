@@ -11,3 +11,14 @@ export const getServices = async () => {
     );
   }
 };
+
+export const getService = async (serviceId: string) => {
+  try {
+    const response = await axios.get(API.USER.SERVICE.GETONE(serviceId));
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || error.message || "Fetch service failed",
+    );
+  }
+};

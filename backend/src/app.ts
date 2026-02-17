@@ -32,7 +32,7 @@ app.use("/uploads", express.static(uploadsPath));
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/category", categoryRoutes);
-app.use("/api/user/service", serviceRoutes);
+app.use("/api/service", serviceRoutes);
 app.use("/api/user/booking", bookingRoutes);
 
 //admin routes

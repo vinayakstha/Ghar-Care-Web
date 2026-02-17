@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 interface ServiceCardProps {
   serviceName: string;
   servicePrice: string;
@@ -24,7 +22,6 @@ export default function ServiceCard({
         backgroundPosition: "center",
       }}
     >
-      {/* Gradient Overlay */}
       <div
         className="absolute inset-0 flex flex-col justify-end p-4"
         style={{
@@ -33,12 +30,12 @@ export default function ServiceCard({
       >
         <div>
           <h3 className="text-white text-lg font-semibold">{serviceName}</h3>
-          <p className="text-white text-sm mb-3">{servicePrice}</p>
+          <p className="text-white text-sm mb-3">Rs.{servicePrice}</p>
         </div>
 
         <button
           onClick={onBookNow}
-          className="bg-green-500 text-black font-semibold px-4 py-2 rounded hover:bg-yellow-400 transition-colors"
+          className="bg-[#006BAA] text-white font-semibold px-4 py-2 rounded hover:bg-[#01508d] transition-colors"
         >
           Book Now
         </button>

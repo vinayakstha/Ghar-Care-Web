@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import CategoryCard from "../_components/CategoryCard";
-import { handleGetCategories } from "@/lib/actions/category-action";
 import ServiceCard from "./ServiceCard";
+import { handleGetCategories } from "@/lib/actions/category-action";
+import { handleGetServices } from "@/lib/actions/service-action";
+import { useRouter } from "next/navigation";
 
 interface Category {
   _id: string;
@@ -11,116 +13,114 @@ interface Category {
   categoryImage: string;
 }
 
+interface Service {
+  _id: string;
+  serviceName: string;
+  price: string;
+  serviceImage: string;
+}
+
 export default function CategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:5050";
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const result = await handleGetCategories();
 
-        if (result.success && result.data) {
-          const categoriesWithFullImage = result.data.map((cat: Category) => ({
-            ...cat,
-            categoryImage: cat.categoryImage
-              ? `${IMAGE_BASE_URL}${cat.categoryImage}`
-              : "/images/category-placeholder.png",
-          }));
+        const [categoryResult, serviceResult] = await Promise.all([
+          handleGetCategories(),
+          handleGetServices(),
+        ]);
+
+        // Categories
+        if (categoryResult.success && categoryResult.data) {
+          const categoriesWithFullImage = categoryResult.data.map(
+            (cat: Category) => ({
+              ...cat,
+              categoryImage: cat.categoryImage
+                ? `${IMAGE_BASE_URL}${cat.categoryImage}`
+                : "/images/category-placeholder.png",
+            }),
+          );
 
           setCategories(categoriesWithFullImage);
-        } else {
-          setError(result.message || "Failed to fetch categories");
+        }
+
+        // Services
+        if (serviceResult.success && serviceResult.data) {
+          const servicesWithFullImage = serviceResult.data.map(
+            (service: Service) => ({
+              ...service,
+              serviceImage: service.serviceImage
+                ? `${IMAGE_BASE_URL}${service.serviceImage}`
+                : "/images/service-placeholder.png",
+            }),
+          );
+
+          setServices(servicesWithFullImage);
         }
       } catch (err: any) {
-        setError(err.message || "An error occurred while fetching categories");
+        setError(err.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchData();
   }, []);
-
-  // Dummy services data (replace with API data later if needed)
-  const services = [
-    {
-      serviceName: "Exterior Painting",
-      servicePrice: "Rs. 40/Sq.Ft.",
-      serviceImage: "/images/abt.jpg",
-    },
-    {
-      serviceName: "Interior Painting",
-      servicePrice: "Rs. 50/Sq.Ft.",
-      serviceImage: "/images/abt.jpg",
-    },
-    {
-      serviceName: "Wall Repair",
-      servicePrice: "Rs. 30/Sq.Ft.",
-      serviceImage: "/images/abt.jpg",
-    },
-    {
-      serviceName: "Roof Painting",
-      servicePrice: "Rs. 60/Sq.Ft.",
-      serviceImage: "/images/abt.jpg",
-    },
-  ];
 
   return (
     <div className="w-full p-4 md:p-6 min-h-screen">
-      {/* PAGE TITLE */}
-      <h1 className="text-lg font-semibold text-gray-700 mb-0">
-        Choose a category
-      </h1>
-
       {/* CATEGORY SECTION */}
-      <div className="bg-white p-4 md:p-6 mb-10">
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-          </div>
-        ) : error ? (
-          <p className="text-red-500 text-center py-12">{error}</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-6">
-            {categories.length > 0 ? (
-              categories.map((category) => (
-                <CategoryCard
-                  key={category._id}
-                  name={category.categoryName}
-                  image={category.categoryImage}
-                  onClick={() =>
-                    console.log(`${category.categoryName} clicked`)
-                  }
-                />
-              ))
-            ) : (
-              <p className="text-gray-400 col-span-full text-center">
-                No categories found
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+      <h1 className="text-lg font-semibold text-gray-700 mb-6">Categories</h1>
 
-      {/* SERVICE SECTION */}
-      <h1 className="text-lg font-semibold text-gray-700 mb-6">Our Services</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {services.map((service, index) => (
-          <ServiceCard
-            key={index}
-            serviceName={service.serviceName}
-            servicePrice={service.servicePrice}
-            serviceImage={service.serviceImage}
-            onBookNow={() => console.log(`${service.serviceName} booked`)}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      ) : error ? (
+        <p className="text-red-500 text-center py-12">{error}</p>
+      ) : (
+        <>
+          {/* Categories Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-0 mb-10">
+            {categories.map((category) => (
+              <CategoryCard
+                key={category._id}
+                name={category.categoryName}
+                image={category.categoryImage}
+                onClick={() => console.log(`${category.categoryName} clicked`)}
+              />
+            ))}
+          </div>
+
+          {/* Services Grid */}
+          <h1 className="text-lg font-semibold text-gray-700 mb-6">
+            Our Services
+          </h1>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {services.map((service) => (
+              <ServiceCard
+                key={service._id}
+                serviceName={service.serviceName}
+                servicePrice={` ${service.price}`}
+                serviceImage={service.serviceImage}
+                onBookNow={() => router.push(`/user/services/${service._id}`)}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
