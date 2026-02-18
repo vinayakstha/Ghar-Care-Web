@@ -5,6 +5,11 @@ import CategoryCard from "../_components/CategoryCard";
 import ServiceCard from "./ServiceCard";
 import { handleGetCategories } from "@/lib/actions/category-action";
 import { handleGetServices } from "@/lib/actions/service-action";
+import {
+  handleAddFavourite,
+  handleRemoveFavourite,
+  handleGetFavouritesByUser,
+} from "@/lib/actions/favourite-action";
 import { useRouter } from "next/navigation";
 
 interface Category {
@@ -20,9 +25,15 @@ interface Service {
   serviceImage: string;
 }
 
+interface Favourite {
+  _id: string;
+  serviceId: any; // can be string or populated object
+}
+
 export default function CategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const [favourites, setFavourites] = useState<Favourite[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,10 +47,12 @@ export default function CategoryPage() {
       try {
         setLoading(true);
 
-        const [categoryResult, serviceResult] = await Promise.all([
-          handleGetCategories(),
-          handleGetServices(),
-        ]);
+        const [categoryResult, serviceResult, favouriteResult] =
+          await Promise.all([
+            handleGetCategories(),
+            handleGetServices(),
+            handleGetFavouritesByUser(),
+          ]);
 
         // Categories
         if (categoryResult.success && categoryResult.data) {
@@ -68,6 +81,11 @@ export default function CategoryPage() {
 
           setServices(servicesWithFullImage);
         }
+
+        // Favourites
+        if (favouriteResult.success && favouriteResult.data) {
+          setFavourites(favouriteResult.data);
+        }
       } catch (err: any) {
         setError(err.message || "Something went wrong");
       } finally {
@@ -77,6 +95,26 @@ export default function CategoryPage() {
 
     fetchData();
   }, []);
+
+  const handleToggleFavourite = async (serviceId: string) => {
+    const existingFavourite = favourites.find(
+      (fav) => fav.serviceId === serviceId || fav.serviceId?._id === serviceId,
+    );
+
+    if (existingFavourite) {
+      setFavourites((prev) =>
+        prev.filter((fav) => fav._id !== existingFavourite._id),
+      );
+
+      await handleRemoveFavourite(existingFavourite._id);
+    } else {
+      const result = await handleAddFavourite(serviceId);
+
+      if (result.success) {
+        setFavourites((prev) => [...prev, result.data]);
+      }
+    }
+  };
 
   return (
     <div className="w-full p-4 md:p-6 min-h-screen">
@@ -109,15 +147,25 @@ export default function CategoryPage() {
           </h1>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {services.map((service) => (
-              <ServiceCard
-                key={service._id}
-                serviceName={service.serviceName}
-                servicePrice={` ${service.price}`}
-                serviceImage={service.serviceImage}
-                onBookNow={() => router.push(`/user/services/${service._id}`)}
-              />
-            ))}
+            {services.map((service) => {
+              const isFavourited = favourites.some(
+                (fav) =>
+                  fav.serviceId === service._id ||
+                  fav.serviceId?._id === service._id,
+              );
+
+              return (
+                <ServiceCard
+                  key={service._id}
+                  serviceName={service.serviceName}
+                  servicePrice={` ${service.price}`}
+                  serviceImage={service.serviceImage}
+                  isFavourited={isFavourited}
+                  onFavouriteClick={() => handleToggleFavourite(service._id)}
+                  onBookNow={() => router.push(`/user/services/${service._id}`)}
+                />
+              );
+            })}
           </div>
         </>
       )}
