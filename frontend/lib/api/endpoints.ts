@@ -46,5 +46,10 @@ export const API = {
       CREATE: "/api/booking",
       GETALLBYUSER: "/api/booking",
     },
+    FAVOURITE: {
+      CREATE: "/api/favourite",
+      DELETE: (favouriteId: string) => `/api/favourite/${favouriteId}`,
+      GETALLBYUSER: "/api/favourite",
+    },
   },
 };

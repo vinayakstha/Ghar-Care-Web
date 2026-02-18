@@ -27,11 +27,10 @@ export default function MyBooking() {
       const response = await handleGetBookingsByUser();
 
       if (response.success) {
-        // Map backend data to BookingCard props
         const mappedBookings: Booking[] = response.data.map((b: any) => ({
-          serviceImage: `${IMAGE_BASE_URL}${b.serviceId.serviceImage}`, // prepend base URL
+          serviceImage: `${IMAGE_BASE_URL}${b.serviceId.serviceImage}`,
           serviceName: b.serviceId.serviceName,
-          price: Number(b.price), // convert string to number
+          price: Number(b.price),
           bookingDate: b.bookingDate,
           bookingTime: b.bookingTime,
           location: b.location,
