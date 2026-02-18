@@ -1,148 +1,11 @@
-// "use client";
-
-// import { useState } from "react";
-// import { MapPin, Calendar, Clock } from "lucide-react";
-
-// export default function BookingForm() {
-//   const [date, setDate] = useState("");
-//   const [time, setTime] = useState("");
-//   const [location, setLocation] = useState("");
-
-//   const today = new Date().toISOString().split("T")[0];
-
-//   const service = {
-//     title: "Electrical: Install Bulb or Tube Light",
-//     image: "/bulb.jpg",
-//     description:
-//       "Need help installing a new bulb or tube light at home or office? Avoid electrical risks and let our experienced technicians handle it safely and professionally.",
-//     price: 550,
-//   };
-
-//   const handleSubmit = (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     if (!date || !time || !location) {
-//       alert("Please fill all fields");
-//       return;
-//     }
-
-//     const bookingData = {
-//       service: service.title,
-//       date,
-//       time,
-//       location,
-//       price: service.price,
-//     };
-
-//     console.log("Booking Data:", bookingData);
-//   };
-
-//   return (
-//     <div className="max-w-7xl mx-auto px-6 py-10">
-//       <div className="grid md:grid-cols-2 gap-10">
-//         {/* LEFT SIDE */}
-//         <div>
-//           <img
-//             src={service.image}
-//             alt={service.title}
-//             className="w-full h-100 object-cover rounded-2xl shadow-md"
-//           />
-
-//           <h1 className="text-3xl font-bold mt-6">{service.title}</h1>
-
-//           <p className="text-gray-600 mt-4 leading-relaxed">
-//             {service.description}
-//           </p>
-//         </div>
-
-//         {/* RIGHT SIDE */}
-//         <form
-//           onSubmit={handleSubmit}
-//           className="bg-white shadow-lg rounded-2xl p-6 h-fit"
-//         >
-//           <h2 className="text-2xl font-semibold mb-4">Book a Service</h2>
-
-//           <div className="flex justify-between items-center mb-6">
-//             <span className="text-gray-500">Price</span>
-//             <span className="text-xl font-bold">Rs. {service.price}</span>
-//           </div>
-
-//           {/* Location */}
-//           <div className="mb-6">
-//             <label className="block mb-2 font-medium">Service Location</label>
-//             <div className="relative">
-//               <MapPin
-//                 size={18}
-//                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-//               />
-//               <input
-//                 type="text"
-//                 placeholder="Enter your address"
-//                 className="w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none"
-//                 value={location}
-//                 onChange={(e) => setLocation(e.target.value)}
-//               />
-//             </div>
-//           </div>
-
-//           {/* Date */}
-//           <div className="mb-6">
-//             <label className="block mb-2 font-medium">Select Date</label>
-//             <div className="relative">
-//               <Calendar
-//                 size={18}
-//                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-//               />
-//               <input
-//                 type="date"
-//                 min={today}
-//                 className="w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none"
-//                 value={date}
-//                 onChange={(e) => setDate(e.target.value)}
-//               />
-//             </div>
-//           </div>
-
-//           {/* Time */}
-//           <div className="mb-6">
-//             <label className="block mb-2 font-medium">Select Time</label>
-//             <div className="relative">
-//               <Clock
-//                 size={18}
-//                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-//               />
-//               <select
-//                 className="w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none appearance-none"
-//                 value={time}
-//                 onChange={(e) => setTime(e.target.value)}
-//               >
-//                 <option value="">Choose time slot</option>
-//                 <option value="4PM-5PM">4PM - 5PM</option>
-//                 <option value="5PM-6PM">5PM - 6PM</option>
-//                 <option value="6PM-7PM">6PM - 7PM</option>
-//                 <option value="7PM-8PM">7PM - 8PM</option>
-//               </select>
-//             </div>
-//           </div>
-
-//           <button
-//             type="submit"
-//             className="w-full bg-[#006BAA] hover:bg-[#01508d] text-white font-semibold py-3 rounded-xl transition"
-//           >
-//             Confirm Booking
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { MapPin, Calendar, Clock } from "lucide-react";
+import { toast } from "react-toastify";
 import { handleGetService } from "@/lib/actions/service-action";
+import { handleCreateBooking } from "@/lib/actions/booking-action";
 
 interface Service {
   _id: string;
@@ -158,6 +21,7 @@ export default function BookingForm() {
 
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -168,40 +32,64 @@ export default function BookingForm() {
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:5050";
 
+  // Fetch service
   useEffect(() => {
     const fetchService = async () => {
       if (!id) return;
 
-      const result = await handleGetService(id);
-      console.log(result);
+      try {
+        const result = await handleGetService(id);
 
-      if (result.success && result.data) {
-        setService(result.data);
+        if (result.success && result.data) {
+          setService(result.data);
+        } else {
+          toast.error(result.message || "Failed to load service");
+        }
+      } catch (error) {
+        toast.error("Error fetching service");
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchService();
   }, [id]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!date || !time || !location || !service) {
-      alert("Please fill all fields");
-      return;
-    }
+  // Handle Booking
+  const handleSubmit = async () => {
+    if (!date) return toast.error("Date is required");
+    if (!time) return toast.error("Time is required");
+    if (!location.trim()) return toast.error("Location is required");
+    if (!service) return toast.error("Service not found");
 
     const bookingData = {
       serviceId: service._id,
-      date,
-      time,
+      bookingDate: date,
+      bookingTime: time,
       location,
       price: service.price,
     };
 
-    console.log("Booking Data:", bookingData);
+    try {
+      setSubmitting(true);
+
+      const result = await handleCreateBooking(bookingData);
+
+      if (result.success) {
+        toast.success("Service Booked Successfully");
+
+        // Reset form
+        setDate("");
+        setTime("");
+        setLocation("");
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create booking");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -239,10 +127,7 @@ export default function BookingForm() {
         </div>
 
         {/* RIGHT SIDE */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white shadow-lg rounded-2xl p-6 h-fit"
-        >
+        <form className="bg-white shadow-lg rounded-2xl p-6 h-fit">
           <h2 className="text-2xl font-semibold mb-4">Book Service</h2>
 
           <div className="flex justify-between items-center mb-6">
@@ -309,10 +194,12 @@ export default function BookingForm() {
           </div>
 
           <button
-            type="submit"
-            className="w-full bg-[#006BAA] hover:bg-[#01508d] text-white font-semibold py-3 rounded-xl transition"
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="w-full bg-[#006BAA] hover:bg-[#01508d] text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
           >
-            Confirm Booking
+            {submitting ? "Booking..." : "Confirm Booking"}
           </button>
         </form>
       </div>

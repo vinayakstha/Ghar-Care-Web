@@ -33,7 +33,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/service", serviceRoutes);
-app.use("/api/user/booking", bookingRoutes);
+app.use("/api/booking", bookingRoutes);
 
 //admin routes
 app.use("/api/admin/users", adminUserRoutes);

@@ -42,5 +42,8 @@ export const API = {
       GETALL: "/api/service",
       GETONE: (serviceId: string) => `/api/service/${serviceId}`,
     },
+    BOOKING: {
+      CREATE: "/api/booking",
+    },
   },
 };
