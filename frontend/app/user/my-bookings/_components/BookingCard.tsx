@@ -48,7 +48,7 @@ export default function BookingCard({
       {/* Middle: Booking Details */}
       <div className="flex-1 flex flex-col justify-between gap-1">
         <h2 className="text-lg font-semibold">{serviceName}</h2>
-        <p className="text-gray-600 font-medium">${price.toFixed(2)}</p>
+        <p className="text-gray-600 font-medium">Rs. {price.toFixed(2)}</p>
 
         <div className="flex items-center gap-2 text-gray-500 text-sm">
           <Calendar size={16} />
