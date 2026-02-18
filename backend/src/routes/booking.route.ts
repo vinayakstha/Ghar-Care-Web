@@ -11,4 +11,6 @@ router.post("/", bookingController.createBooking);
 
 router.patch("/:id/cancel", bookingController.cancelBooking);
 
+router.get("/", bookingController.getBookingsByUser);
+
 export default router;

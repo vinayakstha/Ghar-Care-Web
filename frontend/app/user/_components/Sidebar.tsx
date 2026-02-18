@@ -6,7 +6,7 @@ import { Menu, Briefcase, User, Bookmark, Heart } from "lucide-react";
 
 const sidebarItems = [
   { name: "Services", icon: Briefcase, path: "/user/services" },
-  { name: "My Bookings", icon: Bookmark, path: "/user/bookings" },
+  { name: "My Bookings", icon: Bookmark, path: "/user/my-bookings" },
   { name: "Favourites", icon: Heart, path: "/user/favourites" },
   { name: "Profile", icon: User, path: "/user/profile" },
 ];

@@ -70,4 +70,17 @@ export class UserBookingService {
 
     return await bookingRepository.updateBookingStatus(bookingId, "cancelled");
   }
+
+  async getBookingsByUser(userId: string) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new HttpError(400, "Invalid user ID");
+    }
+
+    const bookings = await bookingRepository.getBookingsByUser(userId);
+
+    if (!bookings.length) {
+      throw new HttpError(404, "No bookings found for this user");
+    }
+    return bookings;
+  }
 }

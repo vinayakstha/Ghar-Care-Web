@@ -1,3 +1,9 @@
+import MyBooking from "./_components/MyBooking";
+
 export default function Page() {
-  return <div></div>;
+  return (
+    <div>
+      <MyBooking />
+    </div>
+  );
 }

@@ -44,6 +44,7 @@ export const API = {
     },
     BOOKING: {
       CREATE: "/api/booking",
+      GETALLBYUSER: "/api/booking",
     },
   },
 };

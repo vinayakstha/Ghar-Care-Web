@@ -12,3 +12,16 @@ export const createBooking = async (bookingData: any) => {
     );
   }
 };
+
+export const getBookingsByUser = async () => {
+  try {
+    const response = await axios.get(API.USER.BOOKING.GETALLBYUSER);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data.message ||
+        error.message ||
+        "Failed to fetch bookings",
+    );
+  }
+};
