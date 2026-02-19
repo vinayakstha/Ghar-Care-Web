@@ -1,6 +1,6 @@
 "use server";
 
-import { getService, getServices } from "../api/service";
+import { getService, getServices, getServicesByCategory } from "../api/service";
 
 export async function handleGetServices() {
   try {
@@ -42,6 +42,28 @@ export async function handleGetService(id: string) {
     return {
       success: false,
       message: error.message || "failed to get service",
+    };
+  }
+}
+
+export async function handleGetServicesByCategory(categoryId: string) {
+  try {
+    const result = await getServicesByCategory(categoryId);
+    if (result.success) {
+      return {
+        success: true,
+        message: "Services fetched by category successfully",
+        data: result.data,
+      };
+    }
+    return {
+      success: false,
+      message: result.message || "Failed to fetch services by category",
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to fetch services by category",
     };
   }
 }

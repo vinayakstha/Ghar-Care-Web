@@ -136,7 +136,9 @@ export default function CategoryPage() {
                 key={category._id}
                 name={category.categoryName}
                 image={category.categoryImage}
-                onClick={() => console.log(`${category.categoryName} clicked`)}
+                onClick={() =>
+                  router.push(`/user/services/category/${category._id}`)
+                }
               />
             ))}
           </div>

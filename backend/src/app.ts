@@ -6,6 +6,7 @@ import userRoutes from "./routes/user.route";
 import adminUserRoutes from "./routes/admin/user.route";
 import adminCategoryRoutes from "./routes/admin/category.route";
 import adminServiceRoutes from "./routes/admin/service.route";
+import adminBookingRoutes from "./routes/admin/booking.route";
 import categoryRoutes from "./routes/category.route";
 import serviceRoutes from "./routes/service.route";
 import bookingRoutes from "./routes/booking.route";
@@ -41,6 +42,8 @@ app.use("/api/favourite", favouriteRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/category", adminCategoryRoutes);
 app.use("/api/admin/service", adminServiceRoutes);
+app.use("/api/admin/booking", adminBookingRoutes);
+
 app.get("/", (req: Request, res: Response) => {
   return res
     .status(200)

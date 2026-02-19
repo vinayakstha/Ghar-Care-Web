@@ -12,7 +12,7 @@ export default function Navbar() {
   const router = useRouter();
 
   return (
-    <header className="w-full bg-white shadow-sm">
+    <header className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* LOGO */}
         <Link
@@ -26,11 +26,10 @@ export default function Navbar() {
             height={32}
             priority
           />
-          <span>GharCare</span>
+          <span>Gharcare</span>
         </Link>
 
-        {/* DESKTOP LINKS */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex flex-1 justify-center items-center gap-8">
           <ScrollLink
             to="home"
             smooth={true}
@@ -46,7 +45,7 @@ export default function Navbar() {
             duration={500}
             className="cursor-pointer text-gray-700 hover:text-[#006BAA]"
           >
-            About
+            About Us
           </ScrollLink>
 
           <ScrollLink
@@ -55,9 +54,12 @@ export default function Navbar() {
             duration={500}
             className="cursor-pointer text-gray-700 hover:text-[#006BAA]"
           >
-            Services
+            Our Services
           </ScrollLink>
+        </div>
 
+        {/* LOGIN BUTTON (right) */}
+        <div className="hidden md:flex">
           <Link
             href="/login"
             className="ml-4 px-5 py-2 rounded-lg bg-[#006BAA] text-white hover:bg-[#01508d] transition"
@@ -106,7 +108,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="cursor-pointer"
             >
-              Services
+              Our Services
             </ScrollLink>
 
             <Link

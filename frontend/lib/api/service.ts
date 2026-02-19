@@ -22,3 +22,18 @@ export const getService = async (serviceId: string) => {
     );
   }
 };
+
+export const getServicesByCategory = async (categoryId: string) => {
+  try {
+    const response = await axios.get(
+      API.USER.SERVICE.GETALLBYCATEGORY(categoryId),
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Fetch services by category failed",
+    );
+  }
+};
