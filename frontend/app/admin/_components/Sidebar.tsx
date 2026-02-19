@@ -8,6 +8,7 @@ import {
   Briefcase,
   User,
   LayoutDashboard,
+  BookmarkPlus,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -16,6 +17,11 @@ const sidebarItems = [
   { name: "Users", icon: Users, path: "/admin/users" },
   { name: "Categories", icon: Grid, path: "/admin/categories" },
   { name: "Services", icon: Briefcase, path: "/admin/services" },
+  {
+    name: "Manage Bookings",
+    icon: BookmarkPlus,
+    path: "/admin/manage-booking",
+  },
   { name: "Profile", icon: User, path: "/admin/profile" },
 ];
 
