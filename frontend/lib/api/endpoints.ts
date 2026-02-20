@@ -24,6 +24,11 @@ export const API = {
       GET_SERVICE_BY_CATEGORY: (categoryId: string) =>
         `api/admin/service/category${categoryId}`,
     },
+    BOOKING: {
+      GETALL: "/api/admin/booking",
+      GETONE: (bookingId: string) => `/api/admin/booking/${bookingId}`,
+      UPDATE: (bookingId: string) => `/api/admin/booking/${bookingId}/status`,
+    },
     USER: {
       CREATE: "/api/admin/users/",
       GET_ALL: "/api/admin/users/",

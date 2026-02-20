@@ -9,12 +9,14 @@ import {
   XCircle,
   Hourglass,
   Eye,
+  User,
 } from "lucide-react";
 
 interface ManageBookingCardProps {
   serviceImage: string;
   serviceName: string;
-  price: number;
+  price: string;
+  user: string;
   bookingDate: string;
   bookingTime: string;
   location: string;
@@ -26,6 +28,7 @@ export default function ManageBookingCard({
   serviceImage,
   serviceName,
   price,
+  user,
   bookingDate,
   bookingTime,
   location,
@@ -55,7 +58,12 @@ export default function ManageBookingCard({
       {/* Middle: Booking Details */}
       <div className="flex-1 flex flex-col justify-between gap-1">
         <h2 className="text-lg font-semibold">{serviceName}</h2>
-        <p className="text-gray-600 font-medium">Rs. {price.toFixed(2)}</p>
+        <p className="text-gray-600 font-medium">Rs. {price}</p>
+
+        <div className="flex items-center gap-2 text-gray-500 text-sm">
+          <User size={16} />
+          <span>{user}</span>
+        </div>
 
         <div className="flex items-center gap-2 text-gray-500 text-sm">
           <Calendar size={16} />
@@ -88,7 +96,7 @@ export default function ManageBookingCard({
           className="flex items-center gap-1 text-sm font-medium text-[#006BAA] hover:underline"
         >
           <Eye size={16} />
-          View
+          View Details
         </button>
       </div>
     </div>

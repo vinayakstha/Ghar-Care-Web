@@ -14,6 +14,16 @@ export class AdminBookingService {
     return bookings;
   }
 
+  async getBookingById(bookingId: string) {
+    const booking = await bookingRepository.getBookingById(bookingId);
+
+    if (!booking) {
+      throw new HttpError(404, "Booking not found");
+    }
+
+    return booking;
+  }
+
   async updateBookingStatus(bookingId: string, status: string) {
     const booking = await bookingRepository.getBookingById(bookingId);
 

@@ -13,5 +13,6 @@ router.use(adminOnlyMiddleware);
 
 router.get("/", bookingController.getAllBookings);
 router.put("/:id/status", bookingController.updateBookingStatus);
+router.get("/:id", bookingController.getBookingById);
 
 export default router;
