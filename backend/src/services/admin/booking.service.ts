@@ -4,6 +4,16 @@ import { BookingRepository } from "../../repositories/booking.repository";
 const bookingRepository = new BookingRepository();
 
 export class AdminBookingService {
+  async getAllBookings() {
+    const bookings = await bookingRepository.getAllBookings();
+
+    if (!bookings || bookings.length === 0) {
+      throw new HttpError(404, "No bookings found");
+    }
+
+    return bookings;
+  }
+
   async updateBookingStatus(bookingId: string, status: string) {
     const booking = await bookingRepository.getBookingById(bookingId);
 
@@ -11,7 +21,6 @@ export class AdminBookingService {
       throw new HttpError(404, "Booking not found");
     }
 
-    // Optional: you can add validation for allowed status values
     const allowedStatuses = ["pending", "completed", "cancelled"];
     if (!allowedStatuses.includes(status)) {
       throw new HttpError(400, "Invalid booking status");

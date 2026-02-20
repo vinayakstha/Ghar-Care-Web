@@ -11,6 +11,7 @@ const bookingController = new AdminBookingController();
 router.use(authorizedMiddleware);
 router.use(adminOnlyMiddleware);
 
+router.get("/", bookingController.getAllBookings);
 router.put("/:id/status", bookingController.updateBookingStatus);
 
 export default router;
