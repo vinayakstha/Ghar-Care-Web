@@ -19,7 +19,7 @@ interface Service {
 
 interface Favourite {
   _id: string;
-  serviceId: string | { _id: string };
+  serviceId: string | { _id: string } | null;
 }
 
 export default function ServiceByCategory() {
@@ -30,13 +30,21 @@ export default function ServiceByCategory() {
 
   const router = useRouter();
   const params = useParams();
-  const categoryId = params.id as string; // Assert non-null
+  const categoryId = params.id as string;
 
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:5050";
 
+  // Helper to safely get favourite service id
+  const getFavouriteId = (fav: Favourite): string | null => {
+    if (!fav.serviceId) return null;
+    return typeof fav.serviceId === "string"
+      ? fav.serviceId
+      : fav.serviceId._id;
+  };
+
   useEffect(() => {
-    if (!categoryId) return; // safety check
+    if (!categoryId) return;
 
     const fetchData = async () => {
       try {
@@ -48,7 +56,8 @@ export default function ServiceByCategory() {
         // Fetch user's favourites
         const favouriteResult = await handleGetFavouritesByUser();
 
-        if (serviceResult.success && serviceResult.data) {
+        // Map services with full image URL
+        if (serviceResult.success && Array.isArray(serviceResult.data)) {
           const servicesWithFullImage = serviceResult.data.map(
             (service: Service) => ({
               ...service,
@@ -60,8 +69,14 @@ export default function ServiceByCategory() {
           setServices(servicesWithFullImage);
         }
 
-        if (favouriteResult.success && favouriteResult.data) {
-          setFavourites(favouriteResult.data);
+        // Save favourites safely
+        if (favouriteResult.success && Array.isArray(favouriteResult.data)) {
+          setFavourites(
+            favouriteResult.data.map((fav: Favourite) => ({
+              ...fav,
+              serviceId: fav.serviceId ?? null, // ensure null is handled
+            })),
+          );
         }
       } catch (err: any) {
         setError(err.message || "Something went wrong");
@@ -75,9 +90,7 @@ export default function ServiceByCategory() {
 
   const handleToggleFavourite = async (serviceId: string) => {
     const existingFavourite = favourites.find(
-      (fav) =>
-        fav.serviceId === serviceId ||
-        (typeof fav.serviceId === "object" && fav.serviceId._id === serviceId),
+      (fav) => getFavouriteId(fav) === serviceId,
     );
 
     if (existingFavourite) {
@@ -115,18 +128,17 @@ export default function ServiceByCategory() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {services.map((service) => {
                 const isFavourited = favourites.some(
-                  (fav) =>
-                    fav.serviceId === service._id ||
-                    (typeof fav.serviceId === "object" &&
-                      fav.serviceId._id === service._id),
+                  (fav) => getFavouriteId(fav) === service._id,
                 );
 
                 return (
                   <ServiceCard
                     key={service._id}
-                    serviceName={service.serviceName}
-                    servicePrice={` ${service.price}`}
-                    serviceImage={service.serviceImage}
+                    serviceName={service.serviceName || "Unknown Service"}
+                    servicePrice={` ${service.price || "0"}`}
+                    serviceImage={
+                      service.serviceImage || "/images/service-placeholder.png"
+                    }
                     isFavourited={isFavourited}
                     onFavouriteClick={() => handleToggleFavourite(service._id)}
                     onBookNow={() =>

@@ -21,27 +21,65 @@ export default function MyBooking() {
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:5050";
 
+  // useEffect(() => {
+  //   async function fetchBookings() {
+  //     setLoading(true);
+  //     const response = await handleGetBookingsByUser();
+
+  //     if (response.success) {
+  //       const mappedBookings: Booking[] = response.data.map((b: any) => ({
+  //         serviceImage: `${IMAGE_BASE_URL}${b.serviceId.serviceImage}`,
+  //         serviceName: b.serviceId.serviceName,
+  //         price: Number(b.price),
+  //         bookingDate: b.bookingDate,
+  //         bookingTime: b.bookingTime,
+  //         location: b.location,
+  //         status: b.status,
+  //       }));
+  //       setBookings(mappedBookings);
+  //     } else {
+  //       console.error(response.message);
+  //     }
+
+  //     setLoading(false);
+  //   }
+
+  //   fetchBookings();
+  // }, []);
   useEffect(() => {
     async function fetchBookings() {
       setLoading(true);
-      const response = await handleGetBookingsByUser();
+      try {
+        const response = await handleGetBookingsByUser();
 
-      if (response.success) {
-        const mappedBookings: Booking[] = response.data.map((b: any) => ({
-          serviceImage: `${IMAGE_BASE_URL}${b.serviceId.serviceImage}`,
-          serviceName: b.serviceId.serviceName,
-          price: Number(b.price),
-          bookingDate: b.bookingDate,
-          bookingTime: b.bookingTime,
-          location: b.location,
-          status: b.status,
-        }));
-        setBookings(mappedBookings);
-      } else {
-        console.error(response.message);
+        if (response.success && Array.isArray(response.data)) {
+          const mappedBookings: Booking[] = response.data
+            .filter((b: any) => b.serviceId) // skip if serviceId missing
+            .map((b: any) => ({
+              serviceImage: b.serviceId?.serviceImage
+                ? `${IMAGE_BASE_URL}${b.serviceId.serviceImage}`
+                : "/placeholder-image.png", // fallback image
+              serviceName: b.serviceId?.serviceName || "Unknown Service",
+              price: Number(b.price) || 0,
+              bookingDate: b.bookingDate || "N/A",
+              bookingTime: b.bookingTime || "N/A",
+              location: b.location || "N/A",
+              status: ["pending", "cancelled", "completed"].includes(b.status)
+                ? b.status
+                : "pending",
+            }));
+
+          setBookings(mappedBookings);
+        } else {
+          console.warn(response.message || "No bookings found for this user.");
+          setBookings([]); // ensure bookings is at least empty array
+        }
+      } catch (err) {
+        console.error("Failed to fetch bookings:", err);
+        setBookings([]);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     fetchBookings();
