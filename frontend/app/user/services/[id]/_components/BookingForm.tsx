@@ -185,15 +185,15 @@ export default function BookingForm() {
                 onChange={(e) => setTime(e.target.value)}
               >
                 <option value="">Choose time slot</option>
-                <option value="4PM-5PM">9PM - 10AM</option>
-                <option value="5PM-6PM">10AM - 11AM</option>
-                <option value="6PM-7PM">11AM - 12PM</option>
-                <option value="7PM-8PM">12PM - 1PM</option>
-                <option value="7PM-8PM">1PM - 2PM</option>
-                <option value="7PM-8PM">2PM - 3PM</option>
-                <option value="7PM-8PM">3PM - 4PM</option>
-                <option value="7PM-8PM">4PM - 5PM</option>
-                <option value="7PM-8PM">5PM - 6PM</option>
+                <option value="9AM-10AM">9AM - 10AM</option>
+                <option value="10AM-11AM">10AM - 11AM</option>
+                <option value="11AM-12AM">11AM - 12PM</option>
+                <option value="12PM-1PM">12PM - 1PM</option>
+                <option value="1PM-2PM">1PM - 2PM</option>
+                <option value="2PM-3PM">2PM - 3PM</option>
+                <option value="3PM-4PM">3PM - 4PM</option>
+                <option value="4PM-5PM">4PM - 5PM</option>
+                <option value="5PM-6PM">5PM - 6PM</option>
               </select>
             </div>
           </div>

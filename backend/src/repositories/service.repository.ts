@@ -23,13 +23,16 @@ export class ServiceRepository implements IServiceRepository {
   }
 
   //convert string to ObjectId
+  // async getServicesByCategory(categoryId: string): Promise<IServiceModel[]> {
+  //   const objectId = new mongoose.Types.ObjectId(categoryId);
+  //   return await ServiceModel.find({ categoryId: objectId }).populate(
+  //     "categoryId",
+  //   );
+  // }
   async getServicesByCategory(categoryId: string): Promise<IServiceModel[]> {
     const objectId = new mongoose.Types.ObjectId(categoryId);
-    return await ServiceModel.find({ categoryId: objectId }).populate(
-      "categoryId",
-    );
+    return await ServiceModel.find({ categoryId: objectId });
   }
-
   async createService(
     serviceData: Partial<IServiceModel>,
   ): Promise<IServiceModel> {
