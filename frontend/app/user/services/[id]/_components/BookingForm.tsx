@@ -2,10 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { MapPin, Calendar, Clock } from "lucide-react";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { Calendar, Clock } from "lucide-react";
 import { toast } from "react-toastify";
 import { handleGetService } from "@/lib/actions/service-action";
 import { handleCreateBooking } from "@/lib/actions/booking-action";
+
+(L.Icon.Default as any).mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+});
 
 interface Service {
   _id: string;
@@ -25,66 +37,74 @@ export default function BookingForm() {
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(""); // human-readable string
+  const [markerPos, setMarkerPos] = useState<[number, number] | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
-
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:5050";
 
-  // Fetch service
   useEffect(() => {
     const fetchService = async () => {
       if (!id) return;
-
       try {
         const result = await handleGetService(id);
-
-        if (result.success && result.data) {
-          setService(result.data);
-        } else {
-          toast.error(result.message || "Failed to load service");
-        }
-      } catch (error) {
+        if (result.success && result.data) setService(result.data);
+        else toast.error(result.message || "Failed to load service");
+      } catch {
         toast.error("Error fetching service");
       } finally {
         setLoading(false);
       }
     };
-
     fetchService();
   }, [id]);
 
-  // Handle Booking
+  // Map click handler
+  function LocationMarker() {
+    useMapEvents({
+      click: async (e) => {
+        setMarkerPos([e.latlng.lat, e.latlng.lng]);
+
+        try {
+          // Reverse geocode using OpenStreetMap Nominatim API
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${e.latlng.lat}&lon=${e.latlng.lng}`,
+          );
+          const data = await res.json();
+          if (data.display_name) setLocation(data.display_name);
+        } catch (error) {
+          toast.error("Failed to get address");
+        }
+      },
+    });
+    return markerPos === null ? null : <Marker position={markerPos}></Marker>;
+  }
+
   const handleSubmit = async () => {
     if (!date) return toast.error("Date is required");
     if (!time) return toast.error("Time is required");
-    if (!location.trim()) return toast.error("Location is required");
+    if (!location) return toast.error("Please select a location on the map");
     if (!service) return toast.error("Service not found");
 
     const bookingData = {
       serviceId: service._id,
       bookingDate: date,
       bookingTime: time,
-      location,
+      location, // human-readable address
       price: service.price,
     };
 
     try {
       setSubmitting(true);
-
       const result = await handleCreateBooking(bookingData);
-
       if (result.success) {
         toast.success("Service Booked Successfully");
-
-        // Reset form
         setDate("");
         setTime("");
         setLocation("");
-      } else {
-        toast.error(result.message);
-      }
+        setMarkerPos(null);
+      } else toast.error(result.message);
     } catch (error: any) {
       toast.error(error.message || "Failed to create booking");
     } finally {
@@ -92,21 +112,17 @@ export default function BookingForm() {
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="text-center py-20 text-lg font-medium">
-        Loading service...
-      </div>
+      <div className="text-center py-20 text-lg font-medium">Loading...</div>
     );
-  }
 
-  if (!service) {
+  if (!service)
     return (
       <div className="text-center py-20 text-lg font-medium text-red-500">
         Service not found
       </div>
     );
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -118,9 +134,7 @@ export default function BookingForm() {
             alt={service.serviceName}
             className="w-full h-96 object-cover rounded-2xl shadow-md"
           />
-
           <h1 className="text-3xl font-bold mt-6">{service.serviceName}</h1>
-
           <p className="text-gray-600 mt-4 leading-relaxed">
             {service.serviceDescription}
           </p>
@@ -135,67 +149,53 @@ export default function BookingForm() {
             <span className="text-xl font-bold">Rs. {service.price}</span>
           </div>
 
-          {/* Location */}
+          {/* MAP */}
           <div className="mb-6">
-            <label className="block mb-2 font-medium">Service Location</label>
-            <div className="relative">
-              <MapPin
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Enter your address"
-                className="w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
+            <label className="block mb-2 font-medium">Select Location</label>
+            <MapContainer
+              center={[27.7172, 85.324]} // default Kathmandu
+              zoom={13}
+              style={{ height: "250px", width: "100%" }}
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <LocationMarker />
+            </MapContainer>
+            {location && (
+              <p className="text-sm mt-2 text-gray-500">Selected: {location}</p>
+            )}
           </div>
 
           {/* Date */}
           <div className="mb-6">
             <label className="block mb-2 font-medium">Select Date</label>
-            <div className="relative">
-              <Calendar
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="date"
-                min={today}
-                className="w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
+            <input
+              type="date"
+              min={today}
+              className="w-full border rounded-lg pl-3 pr-4 py-2 focus:outline-none"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
           </div>
 
           {/* Time */}
           <div className="mb-6">
             <label className="block mb-2 font-medium">Select Time</label>
-            <div className="relative">
-              <Clock
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <select
-                className="w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none appearance-none"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              >
-                <option value="">Choose time slot</option>
-                <option value="9AM-10AM">9AM - 10AM</option>
-                <option value="10AM-11AM">10AM - 11AM</option>
-                <option value="11AM-12AM">11AM - 12PM</option>
-                <option value="12PM-1PM">12PM - 1PM</option>
-                <option value="1PM-2PM">1PM - 2PM</option>
-                <option value="2PM-3PM">2PM - 3PM</option>
-                <option value="3PM-4PM">3PM - 4PM</option>
-                <option value="4PM-5PM">4PM - 5PM</option>
-                <option value="5PM-6PM">5PM - 6PM</option>
-              </select>
-            </div>
+            <select
+              className="w-full border rounded-lg pl-3 pr-4 py-2 focus:outline-none"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            >
+              <option value="">Choose time slot</option>
+              <option value="9AM-10AM">9AM - 10AM</option>
+              <option value="10AM-11AM">10AM - 11AM</option>
+              <option value="11AM-12AM">11AM - 12PM</option>
+              <option value="12PM-1PM">12PM - 1PM</option>
+              <option value="1PM-2PM">1PM - 2PM</option>
+              <option value="2PM-3PM">2PM - 3PM</option>
+              <option value="3PM-4PM">3PM - 4PM</option>
+              <option value="4PM-5PM">4PM - 5PM</option>
+              <option value="5PM-6PM">5PM - 6PM</option>
+            </select>
           </div>
 
           <button
