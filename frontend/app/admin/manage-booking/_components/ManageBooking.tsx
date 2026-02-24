@@ -108,18 +108,18 @@ export default function ManageBooking() {
 
       {/* Modal */}
       {isModalOpen && selectedBooking && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-          <div className="bg-white rounded-xl p-6 w-96 max-w-[90vw] space-y-4 relative shadow-xl">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+          <div className="bg-white rounded-2xl p-8 w-[500px] max-w-[95vw] space-y-6 relative shadow-2xl">
             {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
             >
               <X size={20} />
             </button>
 
-            {/* Booking Title */}
-            <h2 className="text-xl font-semibold flex items-center gap-2">
+            {/* Title */}
+            <h2 className="text-2xl font-semibold text-gray-800">
               {selectedBooking.serviceId.serviceName}
             </h2>
 
@@ -127,72 +127,74 @@ export default function ManageBooking() {
             <img
               src={`${IMAGE_BASE_URL}${selectedBooking.serviceId.serviceImage}`}
               alt={selectedBooking.serviceId.serviceName}
-              className="w-full h-40 object-cover rounded-md"
+              className="w-full h-48 object-cover rounded-xl"
             />
 
-            {/* Details */}
-            <div className="space-y-2 text-gray-700 text-sm">
+            {/* Details Grid */}
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm text-gray-700">
               <div className="flex items-center gap-2">
-                <User size={16} className="text-gray-500" />
+                <User size={16} className="text-gray-400" />
                 <span>{selectedBooking.userId.username}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <MapPin size={16} className="text-gray-500" />
+                <MapPin size={16} className="text-gray-400" />
                 <span>{selectedBooking.location}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <Calendar size={16} className="text-gray-500" />
+                <Calendar size={16} className="text-gray-400" />
                 <span>{selectedBooking.bookingDate}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <Clock size={16} className="text-gray-500" />
+                <Clock size={16} className="text-gray-400" />
                 <span>{selectedBooking.bookingTime}</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Price:</span>
-                <span>Rs {selectedBooking.price}</span>
+              <div>
+                <span className="text-gray-500">Price</span>
+                <p className="font-medium text-gray-800">
+                  Rs {selectedBooking.price}
+                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Status:</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full font-semibold text-white`}
-                  style={{
-                    backgroundColor:
-                      selectedBooking.status === "pending"
-                        ? "#006BAA"
-                        : selectedBooking.status === "completed"
-                          ? "#00AA00"
-                          : "#FF0000",
-                  }}
+              <div>
+                <span className="text-gray-500">Status</span>
+                <br />
+                <p
+                  className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold text-white ${
+                    selectedBooking.status === "pending"
+                      ? "bg-blue-600"
+                      : selectedBooking.status === "completed"
+                        ? "bg-green-600"
+                        : "bg-red-600"
+                  }`}
                 >
                   {selectedBooking.status.toUpperCase()}
-                </span>
+                </p>
               </div>
             </div>
 
             {/* Status Buttons */}
             {selectedBooking.status === "pending" && (
-              <div className="flex gap-2 mt-4 justify-end">
+              <div className="flex gap-3 justify-end pt-4 border-t">
                 <button
                   onClick={() =>
                     handleStatusChange(selectedBooking._id, "completed")
                   }
-                  className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
-                  <CheckCircle size={16} /> Completed
+                  <CheckCircle size={16} /> Mark Completed
                 </button>
+
                 <button
                   onClick={() =>
                     handleStatusChange(selectedBooking._id, "cancelled")
                   }
-                  className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                 >
-                  <XCircle size={16} /> Cancel
+                  <XCircle size={16} /> Cancel Booking
                 </button>
               </div>
             )}

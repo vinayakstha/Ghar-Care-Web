@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Upload, Plus } from "lucide-react";
+import { Upload, Plus, Pencil } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
@@ -226,9 +226,9 @@ export default function EditServiceForm() {
           <div className="flex justify-end">
             <button
               onClick={handleSubmit}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+              className="flex items-center gap-2 px-4 py-2 bg-[#006BAA] hover:bg-[#01508d] text-white rounded-lg transition"
             >
-              <Plus size={20} />
+              <Pencil size={20} />
               Update Service
             </button>
           </div>

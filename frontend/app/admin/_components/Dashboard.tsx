@@ -1,78 +1,141 @@
-// export default function Dashboard() {
-//   return (
-//     <div>
-//       <h1 className="text-2xl font-bold">Dashboard</h1>
-//       <p>Welcome to the admin dashboard!</p>
-//     </div>
-//   );
-// }
 "use client";
-import React from "react";
+
+import React, { useEffect, useState } from "react";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from "recharts";
+import { Users, Layers, Wrench } from "lucide-react";
+import { handleGetAllUsers } from "@/lib/actions/admin/user-action";
+import { handleGetCategories } from "@/lib/actions/admin/category-action";
+import { handleGetServices } from "@/lib/actions/admin/service-action";
 
 export default function Dashboard() {
-  // Dummy data for metrics
-  const metrics = {
-    users: 1200,
-    categories: 5,
-    services: 50,
-  };
+  const [metrics, setMetrics] = useState({
+    users: 0,
+    categories: 0,
+    services: 0,
+  });
 
-  // Dummy data for line chart
-  const chartData = [
-    { name: "Jan", Users: 400, Services: 240 },
-    { name: "Feb", Users: 300, Services: 139 },
-    { name: "Mar", Users: 500, Services: 500 },
-    { name: "Apr", Users: 700, Services: 300 },
-    { name: "May", Users: 600, Services: 450 },
-  ];
+  const [serviceByCategory, setServiceByCategory] = useState<
+    { name: string; value: number }[]
+  >([]);
 
-  // Dummy data for pie chart
-  const serviceByCategory = [
-    { name: "Cleaning", value: 15 },
-    { name: "Plumbing", value: 10 },
-    { name: "Electrical", value: 8 },
-    { name: "Painting", value: 7 },
-    { name: "Other", value: 10 },
-  ];
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setLoading(true);
+
+      // Users
+      const userResult = await handleGetAllUsers("1", "1");
+
+      // Categories
+      const categoryResult = await handleGetCategories();
+
+      // Services
+      const serviceResult = await handleGetServices();
+
+      // Set metrics
+      setMetrics({
+        users:
+          userResult.success && userResult.pagination
+            ? userResult.pagination.totalItems
+            : 0,
+        categories:
+          categoryResult.success && categoryResult.data
+            ? categoryResult.data.length
+            : 0,
+        services:
+          serviceResult.success && serviceResult.data
+            ? serviceResult.data.length
+            : 0,
+      });
+
+      // Prepare pie chart data (group services by category)
+      if (
+        serviceResult.success &&
+        serviceResult.data &&
+        categoryResult.success &&
+        categoryResult.data
+      ) {
+        const categories = categoryResult.data;
+        const services = serviceResult.data;
+
+        const pieData = categories.map((cat: any) => {
+          const count = services.filter(
+            (s: any) => s.categoryId === cat._id,
+          ).length;
+          return { name: cat.categoryName, value: count };
+        });
+
+        setServiceByCategory(pieData);
+      }
+
+      setLoading(false);
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA336A"];
 
   return (
-    <div className="p-6 bg-white min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+    <div className="p-6 bg-white min-h-screen space-y-8">
+      <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold">Users</h2>
-          <p className="text-2xl font-bold">{metrics.users}</p>
+      {/* Metrics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Users */}
+        <div className="bg-white p-6 rounded-2xl shadow flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Total Users</p>
+            <h2 className="text-3xl font-bold text-gray-800 mt-1">
+              {loading ? "..." : metrics.users}
+            </h2>
+          </div>
+          <div className="bg-blue-100 p-3 rounded-full">
+            <Users className="text-blue-600" size={22} />
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold">Categories</h2>
-          <p className="text-2xl font-bold">{metrics.categories}</p>
+
+        {/* Categories */}
+        <div className="bg-white p-6 rounded-2xl shadow flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Total Categories</p>
+            <h2 className="text-3xl font-bold text-gray-800 mt-1">
+              {loading ? "..." : metrics.categories}
+            </h2>
+          </div>
+          <div className="bg-green-100 p-3 rounded-full">
+            <Layers className="text-green-600" size={22} />
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold">Services</h2>
-          <p className="text-2xl font-bold">{metrics.services}</p>
+
+        {/* Services */}
+        <div className="bg-white p-6 rounded-2xl shadow flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Total Services</p>
+            <h2 className="text-3xl font-bold text-gray-800 mt-1">
+              {loading ? "..." : metrics.services}
+            </h2>
+          </div>
+          <div className="bg-purple-100 p-3 rounded-full">
+            <Wrench className="text-purple-600" size={22} />
+          </div>
         </div>
       </div>
 
       {/* Pie Chart */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Services by Category</h2>
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-xl font-semibold mb-6 text-gray-800">
+          Services by Category
+        </h2>
+
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
@@ -81,8 +144,7 @@ export default function Dashboard() {
               nameKey="name"
               cx="50%"
               cy="50%"
-              outerRadius={100}
-              fill="#8884d8"
+              outerRadius={110}
               label
             >
               {serviceByCategory.map((entry, index) => (
