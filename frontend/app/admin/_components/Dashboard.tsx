@@ -2,87 +2,105 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  PieChart,
-  Pie,
-  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 import { Users, Layers, Wrench } from "lucide-react";
 import { handleGetAllUsers } from "@/lib/actions/admin/user-action";
 import { handleGetCategories } from "@/lib/actions/admin/category-action";
 import { handleGetServices } from "@/lib/actions/admin/service-action";
 
+// Types
+type ChartItem = {
+  name: string;
+  value: number;
+};
+
+type Metrics = {
+  users: number;
+  categories: number;
+  services: number;
+};
+
 export default function Dashboard() {
-  const [metrics, setMetrics] = useState({
+  const [metrics, setMetrics] = useState<Metrics>({
     users: 0,
     categories: 0,
     services: 0,
   });
 
-  const [serviceByCategory, setServiceByCategory] = useState<
-    { name: string; value: number }[]
-  >([]);
-
+  const [serviceByCategory, setServiceByCategory] = useState<ChartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
 
-      // Users
-      const userResult = await handleGetAllUsers("1", "1");
+      try {
+        // Fetch users, categories, services
+        const [userResult, categoryResult, serviceResult] = await Promise.all([
+          handleGetAllUsers("1", "1"),
+          handleGetCategories(),
+          handleGetServices(),
+        ]);
 
-      // Categories
-      const categoryResult = await handleGetCategories();
-
-      // Services
-      const serviceResult = await handleGetServices();
-
-      // Set metrics
-      setMetrics({
-        users:
-          userResult.success && userResult.pagination
-            ? userResult.pagination.totalItems
-            : 0,
-        categories:
-          categoryResult.success && categoryResult.data
-            ? categoryResult.data.length
-            : 0,
-        services:
-          serviceResult.success && serviceResult.data
-            ? serviceResult.data.length
-            : 0,
-      });
-
-      // Prepare pie chart data (group services by category)
-      if (
-        serviceResult.success &&
-        serviceResult.data &&
-        categoryResult.success &&
-        categoryResult.data
-      ) {
-        const categories = categoryResult.data;
-        const services = serviceResult.data;
-
-        const pieData = categories.map((cat: any) => {
-          const count = services.filter(
-            (s: any) => s.categoryId === cat._id,
-          ).length;
-          return { name: cat.categoryName, value: count };
+        // Set metrics
+        setMetrics({
+          users:
+            userResult.success && userResult.pagination
+              ? userResult.pagination.totalItems
+              : 0,
+          categories:
+            categoryResult.success && categoryResult.data
+              ? categoryResult.data.length
+              : 0,
+          services:
+            serviceResult.success && serviceResult.data
+              ? serviceResult.data.length
+              : 0,
         });
 
-        setServiceByCategory(pieData);
-      }
+        // Prepare bar chart data
+        if (
+          categoryResult.success &&
+          categoryResult.data &&
+          serviceResult.success &&
+          serviceResult.data
+        ) {
+          const categories = categoryResult.data;
+          const services = serviceResult.data;
 
-      setLoading(false);
+          const chartData: ChartItem[] = categories.map((cat: any) => {
+            const count = services.filter(
+              (s: any) => s.categoryId?._id === cat._id, // 🔑 FIX: use s.categoryId._id
+            ).length;
+
+            return {
+              name: cat.categoryName || "Unknown",
+              value: count,
+            };
+          });
+
+          console.log("Bar Chart Data:", chartData); // Debug
+          setServiceByCategory(chartData);
+        }
+      } catch (error) {
+        console.error("Dashboard fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchDashboardData();
   }, []);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA336A"];
+  const BAR_COLOR = "#006BAA";
 
   return (
     <div className="p-6 bg-white min-h-screen space-y-8">
@@ -130,33 +148,24 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pie Chart */}
-      <div className="bg-white p-6 rounded-2xl shadow">
+      {/* Bar Chart */}
+      <div className="bg-white p-6 rounded-2xl shadow h-100">
         <h2 className="text-xl font-semibold mb-6 text-gray-800">
           Services by Category
         </h2>
 
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={serviceByCategory}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={110}
-              label
-            >
-              {serviceByCategory.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={serviceByCategory}
+            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis allowDecimals={false} />
             <Tooltip />
             <Legend />
-          </PieChart>
+            <Bar dataKey="value" fill={BAR_COLOR} />
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </div>
