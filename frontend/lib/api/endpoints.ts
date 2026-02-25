@@ -52,11 +52,16 @@ export const API = {
     BOOKING: {
       CREATE: "/api/booking",
       GETALLBYUSER: "/api/booking",
+      DELETE: (bookingId: string) => `/api/booking/${bookingId}`,
     },
     FAVOURITE: {
       CREATE: "/api/favourite",
       DELETE: (favouriteId: string) => `/api/favourite/${favouriteId}`,
       GETALLBYUSER: "/api/favourite",
+    },
+    PAYMENT: {
+      INITIATE: "/api/khalti/initiate",
+      VERIFY: "/api/khalti/verify",
     },
   },
 };

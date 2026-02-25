@@ -72,4 +72,23 @@ export class UserBookingController {
       });
     }
   }
+
+  async deleteBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const bookingId = req.params.id;
+      const userId = (req as any).user.id;
+
+      const result = await bookingService.deleteBooking(bookingId, userId);
+
+      return res.status(200).json({
+        success: true,
+        message: result.message,
+      });
+    } catch (error: any) {
+      return res.status(error.status ?? 500).json({
+        success: false,
+        message: error.message ?? "Internal server error",
+      });
+    }
+  }
 }

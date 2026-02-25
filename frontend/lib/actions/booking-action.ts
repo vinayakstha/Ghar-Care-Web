@@ -1,6 +1,10 @@
 "use server";
 
-import { createBooking, getBookingsByUser } from "@/lib/api/booking";
+import {
+  createBooking,
+  deleteBooking,
+  getBookingsByUser,
+} from "@/lib/api/booking";
 import { revalidatePath } from "next/cache";
 
 export async function handleCreateBooking(bookingData: any) {
@@ -50,5 +54,14 @@ export async function handleGetBookingsByUser() {
       success: false,
       message: error.message || "Failed to fetch bookings",
     };
+  }
+}
+
+export async function handleDeleteBooking(bookingId: string) {
+  try {
+    const result = await deleteBooking(bookingId);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error.message };
   }
 }

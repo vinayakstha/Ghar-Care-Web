@@ -83,4 +83,28 @@ export class UserBookingService {
     }
     return bookings;
   }
+
+  async deleteBooking(bookingId: string, userId: string) {
+    const booking = await bookingRepository.getBookingById(bookingId);
+
+    if (!booking) {
+      throw new HttpError(404, "Booking not found");
+    }
+
+    const bookingUserId = (booking.userId as any)._id
+      ? (booking.userId as any)._id.toString()
+      : booking.userId.toString();
+
+    if (bookingUserId !== userId) {
+      throw new HttpError(403, "Not authorized to delete this booking");
+    }
+
+    const deleted = await bookingRepository.deleteBooking(bookingId);
+
+    if (!deleted) {
+      throw new HttpError(500, "Failed to delete booking");
+    }
+
+    return { message: "Booking deleted successfully" };
+  }
 }

@@ -5,10 +5,10 @@ import { useParams } from "next/navigation";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Calendar, Clock } from "lucide-react";
 import { toast } from "react-toastify";
 import { handleGetService } from "@/lib/actions/service-action";
 import { handleCreateBooking } from "@/lib/actions/booking-action";
+import { handleInitiatePayment } from "@/lib/actions/payment-action";
 
 (L.Icon.Default as any).mergeOptions({
   iconRetinaUrl:
@@ -37,7 +37,7 @@ export default function BookingForm() {
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [location, setLocation] = useState(""); // human-readable string
+  const [location, setLocation] = useState("");
   const [markerPos, setMarkerPos] = useState<[number, number] | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
@@ -60,25 +60,22 @@ export default function BookingForm() {
     fetchService();
   }, [id]);
 
-  // Map click handler
   function LocationMarker() {
     useMapEvents({
       click: async (e) => {
         setMarkerPos([e.latlng.lat, e.latlng.lng]);
-
         try {
-          // Reverse geocode using OpenStreetMap Nominatim API
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${e.latlng.lat}&lon=${e.latlng.lng}`,
           );
           const data = await res.json();
           if (data.display_name) setLocation(data.display_name);
-        } catch (error) {
+        } catch {
           toast.error("Failed to get address");
         }
       },
     });
-    return markerPos === null ? null : <Marker position={markerPos}></Marker>;
+    return markerPos === null ? null : <Marker position={markerPos} />;
   }
 
   const handleSubmit = async () => {
@@ -91,22 +88,34 @@ export default function BookingForm() {
       serviceId: service._id,
       bookingDate: date,
       bookingTime: time,
-      location, // human-readable address
+      location,
       price: service.price,
     };
 
     try {
       setSubmitting(true);
-      const result = await handleCreateBooking(bookingData);
-      if (result.success) {
-        toast.success("Service Booked Successfully");
-        setDate("");
-        setTime("");
-        setLocation("");
-        setMarkerPos(null);
-      } else toast.error(result.message);
+
+      // Step 1: Create booking
+      const bookingResult = await handleCreateBooking(bookingData);
+      if (!bookingResult.success) {
+        toast.error(bookingResult.message);
+        return;
+      }
+
+      const bookingId = bookingResult.data._id;
+
+      // Step 2: Initiate payment
+      const paymentResult = await handleInitiatePayment(bookingId);
+      if (!paymentResult.success) {
+        toast.error(paymentResult.message);
+        return;
+      }
+
+      // Step 3: Redirect to Khalti
+      toast.success("Redirecting to payment...");
+      window.location.href = paymentResult.data.payment_url;
     } catch (error: any) {
-      toast.error(error.message || "Failed to create booking");
+      toast.error(error.message || "Something went wrong");
     } finally {
       setSubmitting(false);
     }
@@ -153,7 +162,7 @@ export default function BookingForm() {
           <div className="mb-6">
             <label className="block mb-2 font-medium">Select Location</label>
             <MapContainer
-              center={[27.7172, 85.324]} // default Kathmandu
+              center={[27.7172, 85.324]}
               zoom={13}
               style={{ height: "250px", width: "100%" }}
             >
@@ -204,7 +213,7 @@ export default function BookingForm() {
             disabled={submitting}
             className="w-full bg-[#006BAA] hover:bg-[#01508d] text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
           >
-            {submitting ? "Booking..." : "Confirm Booking"}
+            {submitting ? "Processing..." : "Confirm & Pay"}
           </button>
         </form>
       </div>

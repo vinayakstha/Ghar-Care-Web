@@ -11,6 +11,7 @@ import categoryRoutes from "./routes/category.route";
 import serviceRoutes from "./routes/service.route";
 import bookingRoutes from "./routes/booking.route";
 import favouriteRoutes from "./routes/favourite.route";
+import paymentRoutes from "./routes/payment.route";
 import cors from "cors";
 import path from "path";
 
@@ -37,6 +38,8 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/service", serviceRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/favourite", favouriteRoutes);
+
+app.use("/api", paymentRoutes);
 
 //admin routes
 app.use("/api/admin/users", adminUserRoutes);

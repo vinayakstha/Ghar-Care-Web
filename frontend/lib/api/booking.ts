@@ -25,3 +25,16 @@ export const getBookingsByUser = async () => {
     );
   }
 };
+
+export const deleteBooking = async (bookingId: string) => {
+  try {
+    const response = await axios.delete(API.USER.BOOKING.DELETE(bookingId));
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data.message ||
+        error.message ||
+        "Failed to delete booking",
+    );
+  }
+};
