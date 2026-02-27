@@ -95,7 +95,6 @@ export default function BookingForm() {
     try {
       setSubmitting(true);
 
-      // Step 1: Create booking
       const bookingResult = await handleCreateBooking(bookingData);
       if (!bookingResult.success) {
         toast.error(bookingResult.message);
@@ -104,14 +103,12 @@ export default function BookingForm() {
 
       const bookingId = bookingResult.data._id;
 
-      // Step 2: Initiate payment
       const paymentResult = await handleInitiatePayment(bookingId);
       if (!paymentResult.success) {
         toast.error(paymentResult.message);
         return;
       }
 
-      // Step 3: Redirect to Khalti
       toast.success("Redirecting to payment...");
       window.location.href = paymentResult.data.payment_url;
     } catch (error: any) {

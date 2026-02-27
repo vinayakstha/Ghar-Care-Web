@@ -2,6 +2,7 @@ import { HttpError } from "../errors/http-error";
 import { BookingRepository } from "../repositories/booking.repository";
 import { ServiceRepository } from "../repositories/service.repository";
 import mongoose from "mongoose";
+import { sendBookingConfirmationEmail } from "../utils/sendBookingConfirmationEmail";
 
 const bookingRepository = new BookingRepository();
 const serviceRepository = new ServiceRepository();
@@ -43,7 +44,25 @@ export class UserBookingService {
       status: "pending",
     });
 
-    return booking;
+    // return booking;
+    const populatedBooking = await bookingRepository.getBookingById(
+      booking._id.toString(),
+    );
+    const user = populatedBooking?.userId as any;
+    const servicePop = populatedBooking?.serviceId as any;
+
+    if (user?.email) {
+      await sendBookingConfirmationEmail({
+        toEmail: user.email,
+        userName: user.name ?? "Customer",
+        bookingDate,
+        bookingTime,
+        location,
+        serviceTitle: servicePop?.serviceName ?? "Service",
+      });
+    }
+
+    return populatedBooking!;
   }
 
   async cancelBooking(bookingId: string, userId: string) {

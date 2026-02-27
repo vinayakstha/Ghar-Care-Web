@@ -20,16 +20,14 @@ export class PaymentService {
     );
     if (alreadyPaid) throw new Error("This booking has already been paid");
 
-    // Fetch booking with populated userId (user) and serviceId
     const booking = await bookingRepo.getBookingById(bookingId);
     if (!booking) throw new Error("Booking not found");
 
-    // userId is populated as a user document
     const user = booking.userId as any;
     const fullName =
       `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "Customer";
     const email = user?.email;
-    const totalPrice = parseFloat(booking.price); // price is string in your model
+    const totalPrice = parseFloat(booking.price);
 
     if (!email) throw new Error("User email not found");
 
