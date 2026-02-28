@@ -6,6 +6,7 @@ import {
   CheckCircle,
   XCircle,
   Hourglass,
+  CreditCard,
 } from "lucide-react";
 
 interface BookingCardProps {
@@ -15,7 +16,7 @@ interface BookingCardProps {
   bookingDate: string;
   bookingTime: string;
   location: string;
-  status: "pending" | "cancelled" | "completed";
+  status: "pending" | "cancelled" | "completed" | "paid"; // add paid
 }
 
 export default function BookingCard({
@@ -27,11 +28,30 @@ export default function BookingCard({
   location,
   status,
 }: BookingCardProps) {
-  // Map status to color and icon
-  const statusInfo: Record<string, { color: string; icon: JSX.Element }> = {
-    pending: { color: "#006BAA", icon: <Hourglass size={16} /> },
-    cancelled: { color: "#FF0000", icon: <XCircle size={16} /> },
-    completed: { color: "#00AA00", icon: <CheckCircle size={16} /> },
+  const statusInfo: Record<
+    string,
+    { bg: string; text: string; icon: JSX.Element }
+  > = {
+    pending: {
+      bg: "bg-blue-100",
+      text: "text-[#006BAA]",
+      icon: <Hourglass size={16} />,
+    },
+    cancelled: {
+      bg: "bg-red-100",
+      text: "text-red-600",
+      icon: <XCircle size={16} />,
+    },
+    completed: {
+      bg: "bg-green-100",
+      text: "text-green-600",
+      icon: <CheckCircle size={16} />,
+    },
+    paid: {
+      bg: "bg-purple-100",
+      text: "text-purple-700",
+      icon: <CreditCard size={16} />,
+    },
   };
 
   return (
@@ -66,13 +86,11 @@ export default function BookingCard({
         </div>
       </div>
 
-      {/* Right: Status */}
       <div className="shrink-0 flex items-center gap-1">
         <span
-          className="px-2 py-1 rounded-full text-white font-semibold text-sm flex items-center gap-1"
-          style={{ backgroundColor: statusInfo[status].color }}
+          className={`px-2 py-1 rounded-full font-semibold text-sm flex items-center gap-1 ${statusInfo[status]?.bg ?? "bg-gray-100"} ${statusInfo[status]?.text ?? "text-gray-600"}`}
         >
-          {statusInfo[status].icon}
+          {statusInfo[status]?.icon}
           {status.toUpperCase()}
         </span>
       </div>

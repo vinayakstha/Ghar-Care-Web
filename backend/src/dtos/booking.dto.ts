@@ -10,7 +10,7 @@ export const CreateBookingDto = z.object({
 export type CreateBookingDtoType = z.infer<typeof CreateBookingDto>;
 
 export const UpdateBookingStatusDto = z.object({
-  status: z.enum(["pending", "completed", "cancelled"]),
+  status: z.enum(["pending", "paid", "completed", "cancelled"]),
 });
 
 export type UpdateBookingStatusDtoType = z.infer<typeof UpdateBookingStatusDto>;

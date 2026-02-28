@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { handleGetService } from "@/lib/actions/service-action";
 import { handleCreateBooking } from "@/lib/actions/booking-action";
 import { handleInitiatePayment } from "@/lib/actions/payment-action";
+import { CreditCard, CircleDollarSign } from "lucide-react";
 
 (L.Icon.Default as any).mergeOptions({
   iconRetinaUrl:
@@ -34,6 +35,7 @@ export default function BookingForm() {
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -78,22 +80,54 @@ export default function BookingForm() {
     return markerPos === null ? null : <Marker position={markerPos} />;
   }
 
-  const handleSubmit = async () => {
+  // Validate form before showing modal
+  const handleConfirmClick = () => {
     if (!date) return toast.error("Date is required");
     if (!time) return toast.error("Time is required");
     if (!location) return toast.error("Please select a location on the map");
     if (!service) return toast.error("Service not found");
+    setShowPaymentModal(true);
+  };
 
-    const bookingData = {
-      serviceId: service._id,
-      bookingDate: date,
-      bookingTime: time,
-      location,
-      price: service.price,
-    };
-
+  // Cash payment handler
+  const handleCashPayment = async () => {
+    setShowPaymentModal(false);
     try {
       setSubmitting(true);
+      const bookingData = {
+        serviceId: service!._id,
+        bookingDate: date,
+        bookingTime: time,
+        location,
+        price: service!.price,
+      };
+
+      const bookingResult = await handleCreateBooking(bookingData);
+      if (!bookingResult.success) {
+        toast.error(bookingResult.message);
+        return;
+      }
+
+      toast.success("Booking placed successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Khalti payment handler
+  const handleKhaltiPayment = async () => {
+    setShowPaymentModal(false);
+    try {
+      setSubmitting(true);
+      const bookingData = {
+        serviceId: service!._id,
+        bookingDate: date,
+        bookingTime: time,
+        location,
+        price: service!.price,
+      };
 
       const bookingResult = await handleCreateBooking(bookingData);
       if (!bookingResult.success) {
@@ -206,14 +240,67 @@ export default function BookingForm() {
 
           <button
             type="button"
-            onClick={handleSubmit}
+            onClick={handleConfirmClick}
             disabled={submitting}
             className="w-full bg-[#006BAA] hover:bg-[#01508d] text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
           >
-            {submitting ? "Processing..." : "Confirm & Pay"}
+            {submitting ? "Processing..." : "Book Now"}
           </button>
         </form>
       </div>
+
+      {/* Payment Method Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
+            <h3 className="text-xl font-bold text-center mb-6">
+              Select Payment Method
+            </h3>
+
+            {/* Cash Option */}
+            <button
+              onClick={handleCashPayment}
+              className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition mb-3"
+            >
+              <div className="bg-green-100 p-3 rounded-full">
+                <span className="text-2xl">
+                  <CircleDollarSign color="#008000" />
+                </span>
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-gray-800">Pay with Cash</p>
+                <p className="text-sm text-gray-500">
+                  Pay when service is delivered
+                </p>
+              </div>
+            </button>
+
+            {/* Khalti Option */}
+            <button
+              onClick={handleKhaltiPayment}
+              className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition mb-6"
+            >
+              <div className="bg-purple-100 p-3 rounded-full">
+                <span className="text-2xl">
+                  <CreditCard color="#006BAA" />
+                </span>
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-gray-800">Pay with Khalti</p>
+                <p className="text-sm text-gray-500">Pay online securely</p>
+              </div>
+            </button>
+
+            {/* Cancel */}
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="w-full text-center text-gray-500 hover:text-gray-700 text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

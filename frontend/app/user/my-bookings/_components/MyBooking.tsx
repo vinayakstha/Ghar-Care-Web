@@ -11,7 +11,7 @@ interface Booking {
   bookingDate: string;
   bookingTime: string;
   location: string;
-  status: "pending" | "cancelled" | "completed";
+  status: "pending" | "paid" | "cancelled" | "completed";
 }
 
 export default function MyBooking() {
@@ -64,7 +64,9 @@ export default function MyBooking() {
               bookingDate: b.bookingDate || "N/A",
               bookingTime: b.bookingTime || "N/A",
               location: b.location || "N/A",
-              status: ["pending", "cancelled", "completed"].includes(b.status)
+              status: ["pending", "paid", "cancelled", "completed"].includes(
+                b.status,
+              )
                 ? b.status
                 : "pending",
             }));

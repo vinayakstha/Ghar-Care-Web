@@ -28,7 +28,7 @@ const BookingSchema = new Schema<IBookingModel>(
     location: { type: String },
     status: {
       type: String,
-      enum: ["pending", "completed", "cancelled"],
+      enum: ["pending", "paid", "completed", "cancelled"],
       default: "pending",
     },
   },

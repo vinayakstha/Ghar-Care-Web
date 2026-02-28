@@ -10,6 +10,7 @@ import {
   Hourglass,
   Eye,
   User,
+  CreditCard,
 } from "lucide-react";
 
 interface ManageBookingCardProps {
@@ -20,7 +21,7 @@ interface ManageBookingCardProps {
   bookingDate: string;
   bookingTime: string;
   location: string;
-  status: "pending" | "cancelled" | "completed";
+  status: "pending" | "cancelled" | "completed" | "paid";
   onView?: () => void;
 }
 
@@ -36,17 +37,39 @@ export default function ManageBookingCard({
   onView,
 }: ManageBookingCardProps) {
   const statusInfo: Record<
-    "pending" | "cancelled" | "completed",
-    { color: string; icon: JSX.Element }
+    "pending" | "cancelled" | "completed" | "paid",
+    { bg: string; text: string; icon: JSX.Element }
   > = {
-    pending: { color: "#006BAA", icon: <Hourglass size={16} /> },
-    cancelled: { color: "#FF0000", icon: <XCircle size={16} /> },
-    completed: { color: "#00AA00", icon: <CheckCircle size={16} /> },
+    pending: {
+      bg: "bg-blue-100",
+      text: "text-blue-700",
+      icon: <Hourglass size={16} />,
+    },
+    cancelled: {
+      bg: "bg-red-100",
+      text: "text-red-600",
+      icon: <XCircle size={16} />,
+    },
+    completed: {
+      bg: "bg-green-100",
+      text: "text-green-600",
+      icon: <CheckCircle size={16} />,
+    },
+    paid: {
+      bg: "bg-purple-100",
+      text: "text-purple-700",
+      icon: <CreditCard size={16} />,
+    },
+  };
+
+  const currentStatus = statusInfo[status] ?? {
+    bg: "bg-gray-100",
+    text: "text-gray-600",
+    icon: null,
   };
 
   return (
     <div className="flex items-center justify-between bg-white rounded-xl shadow-md p-4 w-full gap-4">
-      {/* Left: Image */}
       <div className="shrink-0 w-28 h-28 rounded-lg overflow-hidden">
         <img
           src={serviceImage}
@@ -55,7 +78,6 @@ export default function ManageBookingCard({
         />
       </div>
 
-      {/* Middle: Booking Details */}
       <div className="flex-1 flex flex-col justify-between gap-1">
         <h2 className="text-lg font-semibold">{serviceName}</h2>
         <p className="text-gray-600 font-medium">Rs. {price}</p>
@@ -81,13 +103,11 @@ export default function ManageBookingCard({
         </div>
       </div>
 
-      {/* Right: Status + View Button */}
       <div className="shrink-0 flex flex-col items-end gap-3">
         <span
-          className="px-3 py-1 rounded-full text-white font-semibold text-sm flex items-center gap-1"
-          style={{ backgroundColor: statusInfo[status].color }}
+          className={`px-3 py-1 rounded-full font-semibold text-sm flex items-center gap-1 ${currentStatus.bg} ${currentStatus.text}`}
         >
-          {statusInfo[status].icon}
+          {currentStatus.icon}
           {status.toUpperCase()}
         </span>
 

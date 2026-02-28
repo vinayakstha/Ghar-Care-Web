@@ -6,6 +6,7 @@ import {
   Calendar,
   CheckCircle,
   Clock,
+  CreditCard,
   MapPin,
   User,
   X,
@@ -29,7 +30,7 @@ interface Booking {
   bookingTime: string;
   price: string;
   location: string;
-  status: "pending" | "completed" | "cancelled";
+  status: "pending" | "completed" | "cancelled" | "paid"; // added paid
 }
 
 export default function ManageBooking() {
@@ -64,7 +65,7 @@ export default function ManageBooking() {
         prev.map((b) => (b._id === bookingId ? { ...b, status } : b)),
       );
       if (selectedBooking && selectedBooking._id === bookingId) {
-        setSelectedBooking({ ...selectedBooking, status }); // update modal
+        setSelectedBooking({ ...selectedBooking, status });
       }
     }
   };
@@ -79,6 +80,21 @@ export default function ManageBooking() {
     setIsModalOpen(false);
   };
 
+  const getStatusStyle = (status: Booking["status"]) => {
+    switch (status) {
+      case "pending":
+        return "bg-blue-100 text-blue-700";
+      case "completed":
+        return "bg-green-100 text-green-700";
+      case "paid":
+        return "bg-purple-100 text-purple-700";
+      case "cancelled":
+        return "bg-red-100 text-red-600";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
+
   if (loading)
     return <div className="p-6 text-gray-500">Loading bookings...</div>;
 
@@ -90,15 +106,15 @@ export default function ManageBooking() {
           bookings.map((booking) => (
             <ManageBookingCard
               key={booking._id}
-              serviceImage={`${IMAGE_BASE_URL}${booking.serviceId.serviceImage}`}
-              serviceName={booking.serviceId.serviceName}
-              user={booking.userId.username}
+              serviceImage={`${IMAGE_BASE_URL}${booking.serviceId?.serviceImage || ""}`}
+              serviceName={booking.serviceId?.serviceName || "Unknown Service"}
+              user={booking.userId?.username || "Unknown User"}
               price={booking.price}
               bookingDate={booking.bookingDate}
               bookingTime={booking.bookingTime}
               location={booking.location}
               status={booking.status}
-              onView={() => openModal(booking)} // open modal on view
+              onView={() => openModal(booking)}
             />
           ))
         ) : (
@@ -120,13 +136,13 @@ export default function ManageBooking() {
 
             {/* Title */}
             <h2 className="text-2xl font-semibold text-gray-800">
-              {selectedBooking.serviceId.serviceName}
+              {selectedBooking.serviceId?.serviceName || "Unknown Service"}
             </h2>
 
             {/* Image */}
             <img
-              src={`${IMAGE_BASE_URL}${selectedBooking.serviceId.serviceImage}`}
-              alt={selectedBooking.serviceId.serviceName}
+              src={`${IMAGE_BASE_URL}${selectedBooking.serviceId?.serviceImage || ""}`}
+              alt={selectedBooking.serviceId?.serviceName || "Service"}
               className="w-full h-48 object-cover rounded-xl"
             />
 
@@ -134,7 +150,9 @@ export default function ManageBooking() {
             <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm text-gray-700">
               <div className="flex items-center gap-2">
                 <User size={16} className="text-gray-400" />
-                <span>{selectedBooking.userId.username}</span>
+                <span>
+                  {selectedBooking.userId?.username || "Unknown User"}
+                </span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -163,21 +181,16 @@ export default function ManageBooking() {
                 <span className="text-gray-500">Status</span>
                 <br />
                 <p
-                  className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold text-white ${
-                    selectedBooking.status === "pending"
-                      ? "bg-blue-600"
-                      : selectedBooking.status === "completed"
-                        ? "bg-green-600"
-                        : "bg-red-600"
-                  }`}
+                  className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(selectedBooking.status)}`}
                 >
                   {selectedBooking.status.toUpperCase()}
                 </p>
               </div>
             </div>
 
-            {/* Status Buttons */}
-            {selectedBooking.status === "pending" && (
+            {/* Status Buttons - show for pending and paid */}
+            {(selectedBooking.status === "pending" ||
+              selectedBooking.status === "paid") && (
               <div className="flex gap-3 justify-end pt-4 border-t">
                 <button
                   onClick={() =>

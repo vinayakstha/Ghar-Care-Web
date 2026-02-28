@@ -31,7 +31,7 @@ export class AdminBookingService {
       throw new HttpError(404, "Booking not found");
     }
 
-    const allowedStatuses = ["pending", "completed", "cancelled"];
+    const allowedStatuses = ["pending", "paid", "completed", "cancelled"];
     if (!allowedStatuses.includes(status)) {
       throw new HttpError(400, "Invalid booking status");
     }

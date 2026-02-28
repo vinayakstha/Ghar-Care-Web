@@ -75,15 +75,25 @@ export class PaymentService {
       },
     );
 
-    const { status, transaction_id, purchase_order_id, total_amount } =
-      response.data;
+    const { status, transaction_id, total_amount } = response.data;
 
     if (status?.toLowerCase() === "completed") {
       const payment = await paymentRepo.confirm(pidx, transaction_id);
+
+      // Get bookingId from our own payment record using pidx
+      const paymentRecord = await paymentRepo.getByPidx(pidx);
+
+      if (paymentRecord) {
+        await bookingRepo.updateBookingStatus(
+          paymentRecord.bookingId.toString(),
+          "paid",
+        );
+      }
+
       return {
         success: true,
         transactionId: transaction_id,
-        bookingId: purchase_order_id,
+        bookingId: paymentRecord?.bookingId.toString(),
         amount: total_amount / 100,
         payment,
       };
