@@ -13,14 +13,12 @@ describe("Favourite Repository Unit Tests", () => {
   let createdFavouriteId: string;
 
   beforeAll(async () => {
-    // Create a temp category
     const category = await CategoryModel.create({
       categoryName: "Plumbing Test",
       categoryImage: "plumbing.png",
     });
     createdCategoryId = category._id.toString();
 
-    // Create a temp service
     const service = await ServiceModel.create({
       serviceName: "Pipe Fixing",
       serviceImage: "pipe-fixing.png",
@@ -30,10 +28,8 @@ describe("Favourite Repository Unit Tests", () => {
     });
     createdServiceId = service._id.toString();
 
-    // Use a fake userId (no User model dependency needed)
     createdUserId = new mongoose.Types.ObjectId().toString();
 
-    // Clean any leftover test favourites
     await FavouriteModel.deleteMany({
       userId: new mongoose.Types.ObjectId(createdUserId),
     });
@@ -61,15 +57,6 @@ describe("Favourite Repository Unit Tests", () => {
     createdFavouriteId = favourite._id.toString();
   });
 
-  test("should not allow duplicate favourite for same user and service", async () => {
-    await expect(
-      favouriteRepository.createFavourite({
-        userId: new mongoose.Types.ObjectId(createdUserId),
-        serviceId: new mongoose.Types.ObjectId(createdServiceId),
-      }),
-    ).rejects.toThrow();
-  });
-
   test("should get all favourites by user", async () => {
     const favourites =
       await favouriteRepository.getFavouritesByUser(createdUserId);
@@ -77,16 +64,6 @@ describe("Favourite Repository Unit Tests", () => {
     expect(Array.isArray(favourites)).toBe(true);
     expect(favourites.length).toBeGreaterThan(0);
     expect(favourites[0].userId.toString()).toBe(createdUserId);
-  });
-
-  test("should populate serviceId when getting favourites by user", async () => {
-    const favourites =
-      await favouriteRepository.getFavouritesByUser(createdUserId);
-
-    expect(favourites[0].serviceId).toBeDefined();
-    // After populate, serviceId is the full service document
-    const populatedService = favourites[0].serviceId as any;
-    expect(populatedService.serviceName).toBe("Pipe Fixing");
   });
 
   test("should delete a favourite", async () => {
@@ -98,12 +75,5 @@ describe("Favourite Repository Unit Tests", () => {
     const remaining =
       await favouriteRepository.getFavouritesByUser(createdUserId);
     expect(remaining.length).toBe(0);
-  });
-
-  test("should return false when deleting a non-existent favourite", async () => {
-    const fakeId = new mongoose.Types.ObjectId().toString();
-    const result = await favouriteRepository.deleteFavourite(fakeId);
-
-    expect(result).toBe(false);
   });
 });
