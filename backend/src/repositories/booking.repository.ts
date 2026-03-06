@@ -35,12 +35,24 @@ export class BookingRepository implements IBookingRepository {
   }
 
   async getAllBookings(): Promise<IBookingModel[]> {
-    return await BookingModel.find().populate("userId").populate("serviceId");
+    return await BookingModel.find()
+      .populate("userId")
+      .populate("serviceId")
+      .sort({ createdAt: -1 }); // latest bookings first
   }
+
+  // async getBookingsByUser(userId: string): Promise<IBookingModel[]> {
+  //   const objectId = new mongoose.Types.ObjectId(userId);
+  //   return await BookingModel.find({ userId: objectId }).populate("serviceId");
+  // }
 
   async getBookingsByUser(userId: string): Promise<IBookingModel[]> {
     const objectId = new mongoose.Types.ObjectId(userId);
-    return await BookingModel.find({ userId: objectId }).populate("serviceId");
+
+    // Fetch bookings with service populated, latest first
+    return await BookingModel.find({ userId: objectId })
+      .populate("serviceId")
+      .sort({ createdAt: -1 }); // newest bookings first
   }
 
   async getBookingsByService(serviceId: string): Promise<IBookingModel[]> {

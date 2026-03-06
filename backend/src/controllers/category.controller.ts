@@ -1,7 +1,7 @@
-import { AdminCategoryService } from "../services/admin/category.service";
 import { NextFunction, Request, Response } from "express";
+import { CategoryService } from "../services/category.service";
 
-let categoryService = new AdminCategoryService();
+let categoryService = new CategoryService();
 
 export class CategoryController {
   async getCategoryById(req: Request, res: Response, next: NextFunction) {

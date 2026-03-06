@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { handleDeleteUser } from "@/lib/actions/admin/user-action";
@@ -18,8 +18,12 @@ const UserTable = ({
   search?: string;
 }) => {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState(search || "");
+  const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (search) setSearchTerm(search);
+  }, [search]);
 
   const handleSearchChange = () => {
     router.push(

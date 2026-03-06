@@ -77,7 +77,7 @@ export default function Footer() {
 
         {/* Bottom section */}
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
-          <span className="text-sm text-gray-400">© 2025 Writehaven</span>
+          <span className="text-sm text-gray-400">© 2025 Gharcare</span>
 
           {/* Social Icons */}
           <div className="flex gap-4">

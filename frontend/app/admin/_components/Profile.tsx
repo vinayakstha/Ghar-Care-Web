@@ -2,22 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { Pencil, User, AtSign, Mail, Phone, BadgeCheck } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { getCurrentUser } from "@/lib/api/auth"; // your API function
+import { getCurrentUser } from "@/lib/api/auth";
 import Image from "next/image";
+import EditProfileModal from "@/app/user/_components/EditProfileModel";
 
 export default function Profile() {
   const { user, setUser, loading, checkAuth } = useAuth();
   const [profileLoading, setProfileLoading] = useState(true);
-  const router = useRouter();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         setProfileLoading(true);
         const data = await getCurrentUser();
-        setUser(data.data); // make sure this is the actual user object
+        setUser(data.data);
       } catch (err) {
         console.error("Failed to fetch user:", err);
       } finally {
@@ -25,10 +25,11 @@ export default function Profile() {
       }
     };
 
-    if (!user || !user.firstName) fetchUser(); // fetch if user is missing or incomplete
+    if (!user || !user.firstName) fetchUser();
   }, [user, setUser]);
 
   if (loading) return <p>Loading profile...</p>;
+
   const profilePicUrl = user?.profilePicture
     ? user.profilePicture.startsWith("http")
       ? user.profilePicture
@@ -36,7 +37,7 @@ export default function Profile() {
     : "/images/avatar.png";
 
   return (
-    <div className="w-full p-4 md:p-6 space-y-6  min-h-screen">
+    <div className="w-full p-4 md:p-6 space-y-6 min-h-screen">
       {/* PAGE TITLE */}
       <h1 className="text-lg font-semibold text-gray-700">My Profile</h1>
 
@@ -58,7 +59,6 @@ export default function Profile() {
               {user?.firstName} {user?.lastName}
             </h2>
           </div>
-          {/* ROLE */}
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <BadgeCheck size={16} />
             <span>{user?.role}</span>
@@ -72,7 +72,7 @@ export default function Profile() {
           <h3 className="font-semibold text-gray-700">Personal Information</h3>
           <button
             className="flex items-center gap-1 text-sm bg-[#006BAA] text-white px-3 py-1.5 rounded-md hover:bg-[#01508d]"
-            onClick={() => router.push("/admin/edit-profile")}
+            onClick={() => setIsEditModalOpen(true)}
           >
             <Pencil size={14} />
             Edit Profile
@@ -108,6 +108,12 @@ export default function Profile() {
           <InfoItem label="Role" value={user?.role || "-"} icon={BadgeCheck} />
         </div>
       </div>
+
+      {/* EDIT PROFILE MODAL */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
     </div>
   );
 }

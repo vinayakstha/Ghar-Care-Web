@@ -25,10 +25,10 @@ const BookingSchema = new Schema<IBookingModel>(
     bookingDate: { type: String, required: true },
     bookingTime: { type: String, required: true },
     price: { type: String, required: true },
-    note: { type: String },
+    location: { type: String },
     status: {
       type: String,
-      enum: ["pending", "completed", "cancelled"],
+      enum: ["pending", "paid", "completed", "cancelled"],
       default: "pending",
     },
   },

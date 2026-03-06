@@ -6,9 +6,12 @@ import userRoutes from "./routes/user.route";
 import adminUserRoutes from "./routes/admin/user.route";
 import adminCategoryRoutes from "./routes/admin/category.route";
 import adminServiceRoutes from "./routes/admin/service.route";
+import adminBookingRoutes from "./routes/admin/booking.route";
 import categoryRoutes from "./routes/category.route";
 import serviceRoutes from "./routes/service.route";
 import bookingRoutes from "./routes/booking.route";
+import favouriteRoutes from "./routes/favourite.route";
+import paymentRoutes from "./routes/payment.route";
 import cors from "cors";
 import path from "path";
 
@@ -31,14 +34,19 @@ app.use("/uploads", express.static(uploadsPath));
 //user routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/user/category", categoryRoutes);
-app.use("/api/user/service", serviceRoutes);
-app.use("/api/user/booking", bookingRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/service", serviceRoutes);
+app.use("/api/booking", bookingRoutes);
+app.use("/api/favourite", favouriteRoutes);
+
+app.use("/api", paymentRoutes);
 
 //admin routes
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/category", adminCategoryRoutes);
 app.use("/api/admin/service", adminServiceRoutes);
+app.use("/api/admin/booking", adminBookingRoutes);
+
 app.get("/", (req: Request, res: Response) => {
   return res
     .status(200)

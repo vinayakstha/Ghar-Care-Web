@@ -8,10 +8,12 @@ export default function Page() {
   return (
     <div className="w-full min-h-screen">
       <Navbar />
-      <Home />
-      <About />
-      <Services />
-      <Footer />
+      <div className="pt-16">
+        <Home />
+        <About />
+        <Services />
+        <Footer />
+      </div>
     </div>
   );
 }

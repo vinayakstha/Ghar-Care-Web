@@ -12,12 +12,10 @@ describe("Category Repository Unit Tests", () => {
   let createdCategoryId: string;
 
   beforeAll(async () => {
-    // Clean existing test data
     await CategoryModel.deleteMany({ categoryName: testCategory.categoryName });
   });
 
   afterAll(async () => {
-    // Cleanup after tests
     await CategoryModel.deleteMany({ categoryName: testCategory.categoryName });
   });
 

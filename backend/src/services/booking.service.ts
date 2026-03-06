@@ -2,6 +2,7 @@ import { HttpError } from "../errors/http-error";
 import { BookingRepository } from "../repositories/booking.repository";
 import { ServiceRepository } from "../repositories/service.repository";
 import mongoose from "mongoose";
+import { sendBookingConfirmationEmail } from "../utils/sendBookingConfirmationEmail";
 
 const bookingRepository = new BookingRepository();
 const serviceRepository = new ServiceRepository();
@@ -12,7 +13,7 @@ export class UserBookingService {
     serviceId: string,
     bookingDate: string,
     bookingTime: string,
-    note?: string,
+    location: string,
   ) {
     const service = await serviceRepository.getServiceById(serviceId);
 
@@ -39,11 +40,29 @@ export class UserBookingService {
       bookingDate,
       bookingTime,
       price: service.price,
-      note,
+      location,
       status: "pending",
     });
 
-    return booking;
+    // return booking;
+    const populatedBooking = await bookingRepository.getBookingById(
+      booking._id.toString(),
+    );
+    const user = populatedBooking?.userId as any;
+    const servicePop = populatedBooking?.serviceId as any;
+
+    if (user?.email) {
+      await sendBookingConfirmationEmail({
+        toEmail: user.email,
+        userName: user.name ?? "Customer",
+        bookingDate,
+        bookingTime,
+        location,
+        serviceTitle: servicePop?.serviceName ?? "Service",
+      });
+    }
+
+    return populatedBooking!;
   }
 
   async cancelBooking(bookingId: string, userId: string) {
@@ -69,5 +88,42 @@ export class UserBookingService {
     }
 
     return await bookingRepository.updateBookingStatus(bookingId, "cancelled");
+  }
+
+  async getBookingsByUser(userId: string) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new HttpError(400, "Invalid user ID");
+    }
+
+    const bookings = await bookingRepository.getBookingsByUser(userId);
+
+    if (!bookings.length) {
+      throw new HttpError(404, "No bookings found for this user");
+    }
+    return bookings;
+  }
+
+  async deleteBooking(bookingId: string, userId: string) {
+    const booking = await bookingRepository.getBookingById(bookingId);
+
+    if (!booking) {
+      throw new HttpError(404, "Booking not found");
+    }
+
+    const bookingUserId = (booking.userId as any)._id
+      ? (booking.userId as any)._id.toString()
+      : booking.userId.toString();
+
+    if (bookingUserId !== userId) {
+      throw new HttpError(403, "Not authorized to delete this booking");
+    }
+
+    const deleted = await bookingRepository.deleteBooking(bookingId);
+
+    if (!deleted) {
+      throw new HttpError(500, "Failed to delete booking");
+    }
+
+    return { message: "Booking deleted successfully" };
   }
 }

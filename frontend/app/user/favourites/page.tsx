@@ -1,3 +1,9 @@
+import FavouritePage from "./_components/FavouritePage";
+
 export default function Page() {
-  return <div></div>;
+  return (
+    <div>
+      <FavouritePage />
+    </div>
+  );
 }

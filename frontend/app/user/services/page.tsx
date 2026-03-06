@@ -1,3 +1,9 @@
+import CategoryPage from "./_components/CategoryPage";
+
 export default function Page() {
-  return <div></div>;
+  return (
+    <div>
+      <CategoryPage />
+    </div>
+  );
 }

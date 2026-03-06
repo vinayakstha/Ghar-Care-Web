@@ -3,8 +3,8 @@ import { ServiceType } from "../types/service.type";
 
 export interface IServiceModel
   extends Omit<ServiceType, "categoryId">, Document {
-  _id: mongoose.Types.ObjectId; // ✅ fix
-  categoryId: mongoose.Types.ObjectId; // ✅ fix
+  _id: mongoose.Types.ObjectId;
+  categoryId: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
